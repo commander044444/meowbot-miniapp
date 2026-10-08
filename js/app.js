@@ -1,403 +1,235 @@
 /**
- * MeowBot Mini App — Frontend core
- * Bale WebApp + local demo store (API-ready)
- * ⚠️ No secrets. initDataUnsafe is NOT trusted for real auth.
+ * MeowBot Landing — interactions
+ * Scroll reveal · nav · progress · no auth / no Bale user APIs
  */
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "meowbot_mini_v1";
-  const API_BASE = null; // e.g. "https://your-backend.example.com" — set when Backend is ready
+  const cfg = window.MEOW_CONFIG || {};
+  const links = cfg.links || {};
 
-  /* ---------- Storage ---------- */
-  function defaultState() {
-    return {
-      coins: 120,
-      level: 1,
-      xp: 35,
-      xpNeed: 100,
-      totalMeows: 0,
-      gamesPlayed: 0,
-      lastDaily: 0,
-      inventory: [],
-      name: "پیشی‌دوست",
-      userId: null,
-      username: null,
-    };
+  /* ---------- Apply config links ---------- */
+  function href(key, fallback) {
+    const v = links[key];
+    if (v == null || v === "") return fallback || "#";
+    return v;
   }
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultState();
-      return { ...defaultState(), ...JSON.parse(raw) };
-    } catch {
-      return defaultState();
-    }
-  }
-
-  function saveState(s) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    } catch (_) {}
-  }
-
-  let state = loadState();
-
-  /* ---------- Bale WebApp ---------- */
-  function getBale() {
-    return window.Bale?.WebApp || window.Telegram?.WebApp || null;
-  }
-
-  function initBale() {
-    const wa = getBale();
-    if (!wa) return null;
-    try {
-      wa.ready();
-      if (typeof wa.expand === "function") wa.expand();
-      if (wa.setHeaderColor) wa.setHeaderColor("#0d0d1a");
-      if (wa.setBackgroundColor) wa.setBackgroundColor("#07070f");
-    } catch (_) {}
-
-    // Display-only user info (NOT for auth)
-    const u = wa.initDataUnsafe?.user;
-    if (u) {
-      if (u.first_name) state.name = u.first_name + (u.last_name ? " " + u.last_name : "");
-      if (u.id) state.userId = u.id;
-      if (u.username) state.username = u.username;
-      saveState(state);
-    }
-    return wa;
-  }
-
-  /* ---------- API hooks (future Backend) ---------- */
-  async function apiGet(path) {
-    if (!API_BASE) return null;
-    try {
-      const wa = getBale();
-      const headers = { Accept: "application/json" };
-      // When Backend exists: send initData for server-side validation (never trust client alone)
-      if (wa?.initData) headers["X-Bale-Init-Data"] = wa.initData;
-      const res = await fetch(API_BASE + path, { headers });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
-  async function apiPost(path, body) {
-    if (!API_BASE) return null;
-    try {
-      const wa = getBale();
-      const headers = { "Content-Type": "application/json", Accept: "application/json" };
-      if (wa?.initData) headers["X-Bale-Init-Data"] = wa.initData;
-      const res = await fetch(API_BASE + path, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body || {}),
-      });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
-  /* ---------- Economy helpers ---------- */
-  function addXp(amount) {
-    state.xp += amount;
-    let leveled = false;
-    while (state.xp >= state.xpNeed) {
-      state.xp -= state.xpNeed;
-      state.level += 1;
-      state.xpNeed = Math.floor(100 * Math.pow(1.35, state.level - 1));
-      leveled = true;
-      state.coins += 20 * state.level;
-    }
-    saveState(state);
-    return leveled;
-  }
-
-  function addCoins(n) {
-    state.coins = Math.max(0, state.coins + n);
-    saveState(state);
-  }
-
-  function spendCoins(n) {
-    if (state.coins < n) return false;
-    state.coins -= n;
-    saveState(state);
-    return true;
-  }
-
-  /* ---------- UI helpers ---------- */
-  function toast(msg) {
-    let el = document.getElementById("toast");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "toast";
-      el.className = "toast";
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
-    el.classList.add("show");
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove("show"), 2400);
-  }
-
-  function fmt(n) {
-    return Number(n || 0).toLocaleString("fa-IR");
-  }
-
-  function qs(sel, root) {
-    return (root || document).querySelector(sel);
-  }
-  function qsa(sel, root) {
-    return Array.from((root || document).querySelectorAll(sel));
-  }
-
-  function paintCommon() {
-    qsa("[data-coins]").forEach((el) => (el.textContent = fmt(state.coins)));
-    qsa("[data-level]").forEach((el) => (el.textContent = fmt(state.level)));
-    qsa("[data-xp]").forEach((el) => (el.textContent = fmt(state.xp)));
-    qsa("[data-xp-need]").forEach((el) => (el.textContent = fmt(state.xpNeed)));
-    qsa("[data-name]").forEach((el) => (el.textContent = state.name || "کاربر"));
-    qsa("[data-uid]").forEach((el) => (el.textContent = state.userId ? String(state.userId) : "—"));
-    qsa("[data-username]").forEach((el) => (el.textContent = state.username ? "@" + state.username : "—"));
-    qsa("[data-meows]").forEach((el) => (el.textContent = fmt(state.totalMeows)));
-    qsa("[data-games]").forEach((el) => (el.textContent = fmt(state.gamesPlayed)));
-    const pct = Math.min(100, Math.round((state.xp / Math.max(1, state.xpNeed)) * 100));
-    qsa("[data-xp-bar]").forEach((el) => {
-      requestAnimationFrame(() => (el.style.width = pct + "%"));
+  function applyLinks() {
+    document.querySelectorAll("[data-link]").forEach((el) => {
+      const key = el.getAttribute("data-link");
+      const url = href(key);
+      if (url === "#" || !url) {
+        el.setAttribute("href", "#");
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          toast("لینک هنوز در config.js تنظیم نشده");
+        });
+      } else {
+        el.setAttribute("href", url);
+        el.setAttribute("target", "_blank");
+        el.setAttribute("rel", "noopener noreferrer");
+      }
     });
-  }
 
-  /* ---------- Daily reward ---------- */
-  function canDaily() {
-    const day = 24 * 3600 * 1000;
-    return Date.now() - (state.lastDaily || 0) >= day;
-  }
-
-  function claimDaily() {
-    if (!canDaily()) {
-      toast("⏳ جایزه روزانه را قبلاً گرفتی");
-      return;
-    }
-    const reward = 50 + state.level * 10;
-    addCoins(reward);
-    addXp(15);
-    state.lastDaily = Date.now();
-    saveState(state);
-    paintCommon();
-    toast("🎁 +" + reward + " سکه روزانه!");
-    updateDailyBtn();
-  }
-
-  function updateDailyBtn() {
-    const btn = qs("#btn-daily");
-    if (!btn) return;
-    if (canDaily()) {
-      btn.disabled = false;
-      btn.textContent = "دریافت";
-      btn.classList.remove("btn-ghost");
-      btn.classList.add("btn-primary");
-    } else {
-      btn.disabled = true;
-      btn.textContent = "گرفته شد ✓";
-      btn.classList.add("btn-ghost");
-      btn.classList.remove("btn-primary");
-    }
-  }
-
-  /* ---------- Shop catalog (UI ready for API) ---------- */
-  const SHOP = [
-    { id: "food_kibble", emoji: "🥣", name: "خوراک گربه", desc: "۲۰ وعده غذا", price: 40 },
-    { id: "food_fish", emoji: "🐟", name: "ماهی تازه", desc: "غذا + رابطه", price: 80 },
-    { id: "toy_ball", emoji: "🎾", name: "توپ بازی", desc: "۲۰ بار بازی", price: 50 },
-    { id: "toy_laser", emoji: "🔴", name: "لیزر بازی", desc: "سرگرمی قوی", price: 100 },
-    { id: "bed_basic", emoji: "🛏", name: "جای خواب", desc: "برای خواباندن پت", price: 90 },
-    { id: "gift_flower", emoji: "🎁", name: "هدیه گل", desc: "هدیه به پیشی", price: 60 },
-  ];
-
-  function renderShop() {
-    const box = qs("#shop-list");
-    if (!box) return;
-    box.innerHTML = SHOP.map(
-      (it, i) => `
-      <div class="shop-item" style="animation-delay:${i * 0.05}s">
-        <div class="emoji">${it.emoji}</div>
-        <div class="meta">
-          <h4>${it.name}</h4>
-          <p>${it.desc}</p>
-        </div>
-        <div style="text-align:left">
-          <div class="price">${fmt(it.price)} 🪙</div>
-          <button class="btn btn-sm btn-primary" style="margin-top:6px" data-buy="${it.id}">خرید</button>
-        </div>
-      </div>`
-    ).join("");
-    box.querySelectorAll("[data-buy]").forEach((btn) => {
-      btn.addEventListener("click", () => buyItem(btn.getAttribute("data-buy")));
-    });
-  }
-
-  async function buyItem(id) {
-    const it = SHOP.find((x) => x.id === id);
-    if (!it) return;
-    // Future: const res = await apiPost("/shop/buy", { item_id: id });
-    if (!spendCoins(it.price)) {
-      toast("سکه کافی نیست 😿");
-      return;
-    }
-    state.inventory.push({ id: it.id, at: Date.now() });
-    saveState(state);
-    paintCommon();
-    toast("✅ " + it.name + " خریداری شد");
-  }
-
-  /* ---------- Games ---------- */
-  let guessAnswer = null;
-  let reactArmed = false;
-  let reactStart = 0;
-
-  function setupGames() {
-    const gStart = qs("#guess-start");
-    if (gStart) {
-      gStart.addEventListener("click", () => {
-        guessAnswer = 1 + Math.floor(Math.random() * 10);
-        const area = qs("#guess-area");
-        area.innerHTML =
-          '<p style="color:var(--muted);font-size:.85rem;margin-bottom:8px">عدد بین ۱ تا ۱۰ را حدس بزن</p><div class="guess-btns" id="guess-btns"></div>';
-        const btns = qs("#guess-btns");
-        for (let i = 1; i <= 10; i++) {
-          const b = document.createElement("button");
-          b.textContent = i;
-          b.addEventListener("click", () => onGuess(i));
-          btns.appendChild(b);
+    // Social cards from config
+    const grid = document.getElementById("social-grid");
+    if (grid && Array.isArray(cfg.social)) {
+      grid.innerHTML = cfg.social
+        .filter((s) => links[s.key])
+        .map(
+          (s) => `
+        <a class="link-card glass reveal" data-link="${s.key}" href="#">
+          <div class="ico">${s.icon || "🔗"}</div>
+          <div>
+            <div class="t">${s.label}</div>
+            <div class="d">${s.desc || ""}</div>
+          </div>
+          <span class="arrow">←</span>
+        </a>`
+        )
+        .join("");
+      // re-bind
+      grid.querySelectorAll("[data-link]").forEach((el) => {
+        const key = el.getAttribute("data-link");
+        const url = href(key);
+        if (url && url !== "#") {
+          el.setAttribute("href", url);
+          el.setAttribute("target", "_blank");
+          el.setAttribute("rel", "noopener noreferrer");
         }
       });
     }
 
-    const rBtn = qs("#react-btn");
-    if (rBtn) {
-      rBtn.addEventListener("click", onReact);
+    // Developer / studio text
+    const d = cfg.developer || {};
+    const st = cfg.studio || {};
+    setText("[data-dev-name]", d.name);
+    setText("[data-dev-user]", d.username);
+    setText("[data-dev-bio]", d.bio);
+    setText("[data-studio-name]", st.name);
+    setText("[data-studio-tag]", st.tagline);
+    setText("[data-studio-desc]", st.description);
+    setText("[data-brand-name]", (cfg.brand && cfg.brand.name) || "MeowBot");
+    setText("[data-brand-tag]", (cfg.brand && cfg.brand.tagline) || "");
+    setText("[data-brand-desc]", (cfg.brand && cfg.brand.shortDescription) || "");
+
+    if (d.avatar) {
+      const av = document.querySelector(".dev-avatar");
+      if (av) av.innerHTML = `<img src="${d.avatar}" alt="" />`;
+    }
+    if (st.avatar) {
+      const av = document.querySelector(".studio-logo");
+      if (av) av.innerHTML = `<img src="${st.avatar}" alt="" />`;
     }
   }
 
-  function onGuess(n) {
-    if (guessAnswer == null) return;
-    state.gamesPlayed += 1;
-    if (n === guessAnswer) {
-      addCoins(15);
-      const up = addXp(8);
-      paintCommon();
-      toast("🎉 درست بود! +۱۵🪙" + (up ? " · Level Up!" : ""));
-      qs("#guess-area").innerHTML = '<p style="color:var(--green)">درست! عدد ' + guessAnswer + " بود ✨</p>";
-    } else {
-      saveState(state);
-      paintCommon();
-      toast("نه… دوباره امتحان کن");
-    }
-    guessAnswer = null;
+  function setText(sel, val) {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach((el) => {
+      el.textContent = val;
+    });
   }
 
-  function onReact() {
-    const btn = qs("#react-btn");
-    if (!btn) return;
-    if (!reactArmed) {
-      btn.className = "react-btn wait";
-      btn.textContent = "صبر کن…";
-      const delay = 1200 + Math.random() * 2500;
-      setTimeout(() => {
-        reactArmed = true;
-        reactStart = performance.now();
-        btn.className = "react-btn ready";
-        btn.textContent = "الان بزن! ⚡";
-      }, delay);
+  /* ---------- Toast ---------- */
+  function toast(msg) {
+    let t = document.getElementById("toast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "toast";
+      t.style.cssText =
+        "position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:250;padding:12px 18px;border-radius:14px;background:rgba(20,20,40,.95);border:1px solid rgba(167,139,250,.35);font-size:.85rem;font-weight:600;opacity:0;transition:.3s;max-width:90%;text-align:center;pointer-events:none";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(() => {
+      t.style.opacity = "1";
+      t.style.transform = "translateX(-50%) translateY(0)";
+    });
+    clearTimeout(t._t);
+    t._t = setTimeout(() => {
+      t.style.opacity = "0";
+      t.style.transform = "translateX(-50%) translateY(-20px)";
+    }, 2600);
+  }
+
+  /* ---------- Scroll progress ---------- */
+  function onScrollProgress() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const p = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    const bar = document.getElementById("scroll-progress");
+    if (bar) bar.style.width = p + "%";
+  }
+
+  /* ---------- Nav ---------- */
+  function setupNav() {
+    const nav = document.getElementById("nav");
+    const toggle = document.getElementById("nav-toggle");
+    const drawer = document.getElementById("nav-drawer");
+
+    function setScrolled() {
+      if (!nav) return;
+      nav.classList.toggle("scrolled", window.scrollY > 24);
+    }
+    setScrolled();
+    window.addEventListener("scroll", setScrolled, { passive: true });
+
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        nav.classList.toggle("open");
+      });
+    }
+
+    document.querySelectorAll(".nav-drawer a, .nav-links a").forEach((a) => {
+      a.addEventListener("click", () => nav.classList.remove("open"));
+    });
+
+    // Active section
+    const sections = document.querySelectorAll("section[id]");
+    const navAs = document.querySelectorAll(".nav-links a[href^='#'], .nav-drawer a[href^='#']");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (!en.isIntersecting) return;
+          const id = en.target.id;
+          navAs.forEach((a) => {
+            a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+          });
+        });
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+
+  /* ---------- Reveal ---------- */
+  function setupReveal() {
+    const nodes = document.querySelectorAll(".reveal");
+    if (!nodes.length) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      nodes.forEach((n) => n.classList.add("in"));
       return;
     }
-    const ms = Math.round(performance.now() - reactStart);
-    reactArmed = false;
-    btn.className = "react-btn";
-    btn.textContent = "شروع واکنش";
-    state.gamesPlayed += 1;
-    let reward = 5;
-    if (ms < 350) reward = 20;
-    else if (ms < 500) reward = 12;
-    addCoins(reward);
-    addXp(5);
-    paintCommon();
-    toast("⚡ " + ms + "ms · +" + reward + "🪙");
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.classList.add("in");
+          }
+          // keep class when leaving — natural, no flash
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+    );
+
+    nodes.forEach((n, i) => {
+      if (!n.style.getPropertyValue("--d")) {
+        const stagger = n.dataset.stagger;
+        if (stagger != null) n.style.setProperty("--d", Number(stagger) * 70 + "ms");
+        else if (n.parentElement && n.parentElement.classList.contains("grid-3")) {
+          // handled via data-stagger in HTML ideally
+        }
+      }
+      io.observe(n);
+    });
   }
 
-  /* ---------- Leaderboard ---------- */
-  const DEMO_LB = [
-    { name: "میوکینگ", level: 18, coins: 9200 },
-    { name: "پیشی‌طلایی", level: 15, coins: 7100 },
-    { name: "نایت‌کت", level: 12, coins: 5400 },
-    { name: "سفیدبرفی", level: 11, coins: 4800 },
-    { name: "سموری", level: 9, coins: 3200 },
-    { name: "کامیل", level: 8, coins: 2900 },
-    { name: "لونا", level: 7, coins: 2100 },
-    { name: "موچی", level: 6, coins: 1800 },
-  ];
-
-  async function renderLeaderboard() {
-    const box = qs("#lb-list");
-    if (!box) return;
-    // Future: const data = await apiGet("/leaderboard?limit=20");
-    let rows = DEMO_LB.slice();
-    rows.push({
-      name: state.name || "تو",
-      level: state.level,
-      coins: state.coins,
-      me: true,
+  /* ---------- Back to top ---------- */
+  function setupToTop() {
+    const btn = document.getElementById("to-top");
+    if (!btn) return;
+    window.addEventListener(
+      "scroll",
+      () => {
+        btn.classList.toggle("show", window.scrollY > 480);
+      },
+      { passive: true }
+    );
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
-    rows.sort((a, b) => b.coins - a.coins || b.level - a.level);
-    box.innerHTML = rows
-      .slice(0, 12)
-      .map((r, i) => {
-        const cls = i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : "";
-        const me = r.me ? " · تو" : "";
-        return `<div class="lb-row ${cls}" style="animation-delay:${i * 0.04}s">
-        <div class="rank">${i + 1}</div>
-        <div class="lb-info"><div class="n">${r.name}${me}</div><div class="s">Lv ${fmt(r.level)}</div></div>
-        <div class="lb-coins">${fmt(r.coins)} 🪙</div>
-      </div>`;
-      })
-      .join("");
+  }
+
+  /* ---------- Loader ---------- */
+  function hideLoader() {
+    const l = document.getElementById("loader");
+    if (!l) return;
+    requestAnimationFrame(() => l.classList.add("hide"));
   }
 
   /* ---------- Boot ---------- */
   function boot() {
-    initBale();
-    paintCommon();
-    updateDailyBtn();
-    const daily = qs("#btn-daily");
-    if (daily) daily.addEventListener("click", claimDaily);
-    renderShop();
-    setupGames();
-    renderLeaderboard();
-
-    // soft page enter
-    document.body.style.opacity = "0";
-    requestAnimationFrame(() => {
-      document.body.style.transition = "opacity .4s ease";
-      document.body.style.opacity = "1";
-    });
+    applyLinks();
+    setupNav();
+    setupReveal();
+    setupToTop();
+    window.addEventListener("scroll", onScrollProgress, { passive: true });
+    onScrollProgress();
+    hideLoader();
   }
-
-  window.MeowApp = {
-    state,
-    paintCommon,
-    toast,
-    apiGet,
-    apiPost,
-    addCoins,
-    spendCoins,
-    addXp,
-  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
