@@ -25,7 +25,9 @@
         <span>MeowBot</span>
       </a>
       <nav class="nav-links" aria-label="منو">
-        <a href="#about">درباره</a>
+        <a href="#playground">Playground</a>
+        <a href="#playground">Playground</a>
+      <a href="#about">درباره</a>
         <a href="#features">ویژگی‌ها</a>
         <a href="#developer">سازنده</a>
         <a href="#studio">استودیو</a>
@@ -73,6 +75,20 @@
         </div>
         <div class="hero-visual reveal" style="--d:160ms">
           <span class="big">🐱</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- PLAYGROUND TEASER -->
+    <section class="section" id="playground" style="padding-top:24px">
+      <div class="wrap">
+        <div class="pg-teaser glass reveal">
+          <span class="pg-count"><span data-game-count>40</span>+ بازی واقعی</span>
+          <h2>راستی اگه حوصلت سر رفته
+من میتونم سرگرمت کنم 😼</h2>
+          <p>فقط بزن رو این دکمه و ببین وارد چه دنیایی میشی!</p>
+          <a class="btn btn-primary" href="#" data-open-playground>🎮 وارد Meow Playground شو</a>
         </div>
       </div>
     </section>
@@ -327,9 +343,15 @@
     </div>
   </footer>
 
+  <div id="pg-overlay" aria-hidden="true"><div id="pg-view"></div></div>
+
   <button type="button" id="to-top" aria-label="بالای صفحه">↑</button>
 
   <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/playground.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
