@@ -3,355 +3,214 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#06060e" />
-  <meta name="description" content="MeowBot — ربات اجتماعی و سرگرمی برای بله. ساخته‌شده توسط COMMANDER04 · Darkknight Studio" />
-  <meta property="og:title" content="MeowBot 🐱" />
-  <meta property="og:description" content="ربات اجتماعی و سرگرمی برای بله" />
-  <meta property="og:type" content="website" />
-  <title>MeowBot 🐱 · معرفی</title>
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="description" content="MeowBot — arcade and progressive mini app" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <title>MeowBot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="loader" aria-hidden="true"><div class="spin"></div></div>
-  <div id="scroll-progress" aria-hidden="true"></div>
-
-  <header class="nav" id="nav">
-    <div class="nav-inner">
-      <a href="#top" class="nav-brand">
-        <span class="mark">🐱</span>
-        <span>MeowBot</span>
-      </a>
-      <nav class="nav-links" aria-label="منو">
-        <a href="#playground">Playground</a>
-        <a href="#playground">Playground</a>
-      <a href="#about">درباره</a>
-        <a href="#features">ویژگی‌ها</a>
-        <a href="#developer">سازنده</a>
-        <a href="#studio">استودیو</a>
-        <a href="#story">مسیر</a>
-        <a href="#links">لینک‌ها</a>
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a href="#home" class="brand" data-nav="home"><span class="brand-mark">M</span> MeowBot</a>
+      <nav class="desktop-nav" aria-label="Main">
+        <a href="#home" data-nav="home">Home</a>
+        <a href="#playground" data-nav="playground">Playground</a>
+        <a href="#progress" data-nav="progress">Progress</a>
+        <a href="#shop" data-nav="shop">Shop</a>
+        <a href="#profile" data-nav="profile">Profile</a>
+        <a href="#about" data-nav="about">About</a>
       </nav>
-      <a class="nav-cta" data-link="bot" href="#">باز کردن ربات</a>
-      <button class="nav-toggle" id="nav-toggle" aria-label="منو" type="button">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-    <div class="nav-drawer" id="nav-drawer">
-      <a href="#about">درباره</a>
-      <a href="#features">ویژگی‌ها</a>
-      <a href="#developer">سازنده</a>
-      <a href="#studio">استودیو</a>
-      <a href="#story">مسیر</a>
-      <a href="#future">آینده</a>
-      <a href="#links">لینک‌ها</a>
-      <a data-link="bot" href="#">باز کردن ربات</a>
+      <div class="top-actions">
+        <button type="button" class="icon-btn" id="btn-search" aria-label="Search">⌕</button>
+      </div>
     </div>
   </header>
 
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="wrap hero-grid">
+  <main class="wrap">
+    <!-- HOME -->
+    <section class="view active" id="view-home" data-view="home">
+      <div class="hero">
         <div>
-          <div class="hero-badge reveal">🐱 MeowBot · بله</div>
-          <h1 class="reveal" style="--d:80ms"><span data-brand-name>MeowBot</span></h1>
-          <p class="hero-lead reveal" style="--d:140ms" data-brand-tag>
-            ربات اجتماعی و سرگرمی برای بله
-          </p>
-          <p class="prose reveal" style="--d:180ms;margin-bottom:22px" data-brand-desc>
-            MeowBot یک ربات واقعی روی بله است؛ با میو کردن، پت، بازی، نبرد و سیستم اقتصادی برای گروه‌ها و پیوی.
-          </p>
-          <div class="btn-row reveal" style="--d:220ms">
-            <a class="btn btn-primary" data-link="bot" href="#">باز کردن ربات</a>
-            <a class="btn btn-ghost" href="#about">آشنایی بیشتر ↓</a>
+          <h1>MeowBot</h1>
+          <p class="lede" data-brand-desc>A social entertainment bot for Bale — with an offline arcade you can play anytime.</p>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-primary" data-open-playground>Open Playground</button>
+            <button type="button" class="btn btn-ghost" data-nav="about">About</button>
           </div>
-          <a class="scroll-cue reveal" style="--d:300ms" href="#about">
-            <span class="chev">↓</span>
-            اسکرول کن
-          </a>
+          <div class="assist-chip" id="home-assist"></div>
+          <div class="stat-row">
+            <div><span>Games</span><strong data-stat-games>0</strong></div>
+            <div><span>Level</span><strong data-stat-level>1</strong></div>
+            <div><span>XP</span><strong data-stat-xp>0</strong></div>
+            <div><span>Achievements</span><strong data-stat-ach>0</strong></div>
+          </div>
+          <div class="xp-line"><i data-xp-bar></i></div>
         </div>
-        <div class="hero-visual reveal" style="--d:160ms">
-          <span class="big">🐱</span>
+        <div class="hero-visual" aria-hidden="true">M</div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Quick access</div>
+        <div class="list">
+          <button type="button" class="list-row" data-open-playground>
+            <div class="meta"><strong>Playground</strong><span><span data-game-count>0</span> playable games</span></div>
+            <span class="trail">→</span>
+          </button>
+          <button type="button" class="list-row" data-nav="progress">
+            <div class="meta"><strong>Progress</strong><span>Level, XP, achievements</span></div>
+            <span class="trail">→</span>
+          </button>
+          <button type="button" class="list-row" data-nav="shop">
+            <div class="meta"><strong>Shop</strong><span>Themes and cosmetics</span></div>
+            <span class="trail">→</span>
+          </button>
+          <button type="button" class="list-row" data-nav="world">
+            <div class="meta"><strong>Meow World</strong><span>Navigate the app</span></div>
+            <span class="trail">→</span>
+          </button>
         </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Daily challenge</div>
+        <div class="panel" id="home-daily"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Featured</div>
+        <div class="panel" id="home-featured"></div>
       </div>
     </section>
 
+    <!-- PROGRESS -->
+    <section class="view" id="view-progress" data-view="progress">
+      <h1 class="page-title">Progress</h1>
+      <p class="lede">Local progression only. Nothing leaves this device.</p>
+      <div class="panel" style="margin-top:16px" id="progress-panel"></div>
+      <div class="section" style="margin-top:28px">
+        <div class="section-label">Achievements</div>
+        <div class="ach-grid" id="ach-grid"></div>
+      </div>
+      <div class="section">
+        <div class="section-label">Statistics</div>
+        <div class="panel" id="stats-panel"></div>
+      </div>
+    </section>
 
-    <!-- PLAYGROUND TEASER -->
-    <section class="section" id="playground" style="padding-top:24px">
-      <div class="wrap">
-        <div class="pg-teaser glass reveal">
-          <span class="pg-count"><span data-game-count>40</span>+ بازی واقعی</span>
-          <h2>راستی اگه حوصلت سر رفته
-من میتونم سرگرمت کنم 😼</h2>
-          <p>فقط بزن رو این دکمه و ببین وارد چه دنیایی میشی!</p>
-          <a class="btn btn-primary" href="#" data-open-playground>🎮 وارد Meow Playground شو</a>
+    <!-- SHOP -->
+    <section class="view" id="view-shop" data-view="shop">
+      <h1 class="page-title">Shop</h1>
+      <p class="lede">Cosmetic unlocks with arcade coins. No real money.</p>
+      <p class="muted" style="margin-top:8px">Balance: <strong data-currency>0</strong></p>
+      <div class="panel" style="margin-top:16px" id="shop-list"></div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="view-profile" data-view="profile">
+      <h1 class="page-title">Profile</h1>
+      <div class="profile-head" id="profile-head"></div>
+      <div class="panel">
+        <div class="form-row">
+          <label for="pf-name">Name</label>
+          <input class="field" id="pf-name" maxlength="24" />
         </div>
+        <div class="form-row">
+          <label for="pf-bio">Bio</label>
+          <textarea class="field" id="pf-bio" rows="3" maxlength="120"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="pf-save">Save</button>
+      </div>
+      <div class="section" style="margin-top:24px">
+        <div class="section-label">Theme</div>
+        <div id="theme-chips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+    </section>
+
+    <!-- WORLD -->
+    <section class="view" id="view-world" data-view="world">
+      <h1 class="page-title">Meow World</h1>
+      <p class="lede">Jump to any area of the app.</p>
+      <div class="world-grid" style="margin-top:18px">
+        <button type="button" class="world-tile" data-nav="home"><strong>Home</strong><span>Overview</span></button>
+        <button type="button" class="world-tile" data-open-playground><strong>Arcade</strong><span>All games</span></button>
+        <button type="button" class="world-tile" data-nav="progress"><strong>Achievements</strong><span>Progress</span></button>
+        <button type="button" class="world-tile" data-nav="shop"><strong>Shop</strong><span>Cosmetics</span></button>
+        <button type="button" class="world-tile" data-nav="profile"><strong>Profile</strong><span>You</span></button>
+        <button type="button" class="world-tile" id="world-daily"><strong>Daily</strong><span>Today's challenge</span></button>
       </div>
     </section>
 
     <!-- ABOUT -->
-    <section class="section" id="about">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">About</span>
-          <h2>درباره MeowBot</h2>
+    <section class="view" id="view-about" data-view="about">
+      <h1 class="page-title">About MeowBot</h1>
+      <p class="lede" style="margin-top:8px" data-brand-desc></p>
+      <div class="panel" style="margin-top:20px">
+        <p class="muted" style="margin-bottom:10px">This bot and mini app were built by one person.</p>
+        <strong data-dev-name>COMMANDER04</strong>
+        <p class="muted" data-dev-user>@commander04</p>
+        <p style="margin-top:8px;font-size:0.9rem" data-dev-bio></p>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
+          <a class="btn btn-sm" data-link="developerProfile" href="#">Profile</a>
+          <a class="btn btn-sm btn-ghost" data-link="developerMore" href="#">More</a>
         </div>
-        <div class="prose reveal" style="--d:80ms">
-          <p>
-            <strong>MeowBot</strong> یک ربات پیام‌رسان روی بله است که حول تجربه «میو کردن»، نگهداری پت مجازی، بازی‌های کوتاه، نبرد و اقتصاد داخل‌ربات طراحی شده.
-          </p>
-          <p>
-            هدفش این است که در گروه‌ها و چت خصوصی، تعامل ساده و سرگرم‌کننده بسازد؛ بدون پیچیدگی اضافه برای کاربر عادی.
-          </p>
-          <p>
-            پروژه به‌صورت واقعی روی زیرساخت Production (از جمله PostgreSQL و پنل مدیریت) توسعه داده می‌شود و این صفحه فقط معرفی برند و مسیر پروژه است — نه داشبورد حساب کاربری.
-          </p>
+      </div>
+      <div class="panel" style="margin-top:12px">
+        <strong data-studio-name>Darkknight Studio</strong>
+        <p class="muted" style="margin-top:6px" data-studio-desc></p>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
+          <a class="btn btn-sm" data-link="studio" href="#">Studio</a>
+          <a class="btn btn-sm btn-ghost" data-link="bot" href="#">Open bot</a>
+          <a class="btn btn-sm btn-ghost" data-link="officialChannel" href="#">Channel</a>
         </div>
+      </div>
+      <div class="footer-mini">
+        <p>© 2026 MeowBot · All rights reserved</p>
+        <p style="margin-top:4px">Powered by Darkknight Studio · Made by COMMANDER04</p>
       </div>
     </section>
 
-    <!-- FEATURES -->
-    <section class="section" id="features">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Features</span>
-          <h2>ویژگی‌های MeowBot</h2>
-          <p>بخشی از قابلیت‌هایی که در خود ربات فعال‌اند یا در مسیر توسعه قرار دارند.</p>
-        </div>
-        <div class="grid-3">
-          <article class="feat-card glass reveal" data-stagger="0">
-            <div class="ico">🤖</div>
-            <h3>هسته ربات</h3>
-            <p>میو کردن در گروه و پیوی، پاسخ‌های متنوع، کول‌داون و امتیاز فصلی.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="1">
-            <div class="ico">🐾</div>
-            <h3>سیستم پت</h3>
-            <p>نام‌گذاری، غذا، بازی، خواب و فروشگاه آیتم با دوام محدود.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="2">
-            <div class="ico">🪙</div>
-            <h3>اقتصاد</h3>
-            <p>سکه و امتیاز سراسری، فروشگاه، پاداش بازی و نبرد.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="3">
-            <div class="ico">🎮</div>
-            <h3>سرگرمی</h3>
-            <p>بازی‌های کوتاه داخل ربات با جایزه زمان‌بندی‌شده.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="4">
-            <div class="ico">⚔️</div>
-            <h3>نبرد</h3>
-            <p>مچ‌میکینگ صف و چالش در گروه با کول‌داون.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="5">
-            <div class="ico">🛡</div>
-            <h3>مدیریت</h3>
-            <p>پنل Owner/Admin، تیکت، گزارش باگ، نقش‌ها و لاگ فعالیت.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="6">
-            <div class="ico">📅</div>
-            <h3>ایونت و فصل</h3>
-            <p>ضریب XP/سکه موقت و رتبه‌بندی گروهی و جهانی.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="7">
-            <div class="ico">👥</div>
-            <h3>گروه و اجتماعی</h3>
-            <p>تنظیمات گروه توسط ادمین‌ها، رنکینگ جدا و گروه جهانی میو.</p>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="8">
-            <div class="ico">✨</div>
-            <h3>آینده</h3>
-            <p>اتصال عمیق‌تر Mini App به Backend و قابلیت‌های جدید.</p>
-            <span class="tag">Coming Soon</span>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- DEVELOPER -->
-    <section class="section" id="developer">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Creator</span>
-          <h2>درباره سازنده</h2>
-        </div>
-        <p class="solo-quote reveal">این ربات و مینی‌اپ فقط به دست ۱ نفر ساخته شده.</p>
-        <div class="dev-card glass reveal" style="--d:100ms">
-          <div class="dev-avatar">C</div>
-          <div class="dev-meta">
-            <h3 data-dev-name>COMMANDER04</h3>
-            <div class="user" data-dev-user>@commander04</div>
-            <p class="bio" data-dev-bio>
-              توسعه‌دهنده بک‌اند و ربات‌های پیام‌رسان. تمرکز روی Python، معماری پایدار و تجربه کاربری تمیز در پروژه‌های دیجیتال.
-            </p>
-            <div class="btn-row" style="margin-top:14px">
-              <a class="btn btn-primary" data-link="developerProfile" href="#">باز کردن پروفایل</a>
-              <a class="btn btn-ghost" data-link="developerPv" href="#">باز کردن در PV</a>
-              <a class="btn btn-ghost" data-link="developerMore" href="#">بیشتر</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STUDIO -->
-    <section class="section studio-section" id="studio">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Brand</span>
-          <h2>قدرت گرفته از Darkknight Studio</h2>
-        </div>
-        <div class="studio-card glass reveal">
-          <div class="studio-top">
-            <div class="studio-logo">⚔️</div>
-            <div>
-              <h3 data-studio-name>Darkknight Studio</h3>
-              <div class="sub" data-studio-tag>قدرت گرفته از Darkknight Studio</div>
-            </div>
-          </div>
-          <p class="desc" data-studio-desc>
-            استودیوی ساخت محصولات دیجیتال و ربات‌های پیام‌رسان. MeowBot زیر چتر این برند توسعه داده می‌شود.
-          </p>
-          <div class="btn-row">
-            <a class="btn btn-primary" data-link="studioJoin" href="#">عضویت / Join</a>
-            <a class="btn btn-ghost" data-link="studio" href="#">صفحه رسمی</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STORY -->
-    <section class="section" id="story">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Timeline</span>
-          <h2>مسیر پروژه</h2>
-        </div>
-        <div class="timeline">
-          <div class="tl-item reveal">
-            <div class="tl-dot"></div>
-            <h4>شروع پروژه</h4>
-            <p>ایده ربات اجتماعی حول میو و تعامل گروهی روی بله شکل گرفت.</p>
-          </div>
-          <div class="tl-item reveal" style="--d:80ms">
-            <div class="tl-dot"></div>
-            <h4>ساخت MeowBot</h4>
-            <p>هسته ربات، امتیاز، گروه‌ها و پاسخ‌های میو پیاده‌سازی شد.</p>
-          </div>
-          <div class="tl-item reveal" style="--d:140ms">
-            <div class="tl-dot"></div>
-            <h4>توسعه قابلیت‌ها</h4>
-            <p>پت، فروشگاه، نبرد، بازی، ایونت، پنل ادمین و PostgreSQL اضافه شدند.</p>
-          </div>
-          <div class="tl-item reveal" style="--d:200ms">
-            <div class="tl-dot"></div>
-            <h4>ساخت Mini App</h4>
-            <p>صفحه معرفی رسمی برند و مسیر توسعه پروژه.</p>
-          </div>
-          <div class="tl-item reveal" style="--d:260ms">
-            <div class="tl-dot"></div>
-            <h4>توسعه آینده</h4>
-            <p>اتصال عمیق‌تر وب‌اپ به Backend و ادامه بهبود تجربه داخل ربات.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FUTURE -->
-    <section class="section" id="future">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Roadmap</span>
-          <h2>آینده MeowBot</h2>
-          <p>ایده‌هایی که در صف توسعه‌اند — هنوز به‌عنوان قابلیت زنده ادعا نمی‌شوند.</p>
-        </div>
-        <div class="grid-3">
-          <article class="feat-card glass reveal" data-stagger="0">
-            <div class="ico">🔗</div>
-            <h3>همگام‌سازی وب‌اپ</h3>
-            <p>نمایش موجودی و آمار واقعی از همان دیتابیس ربات.</p>
-            <span class="tag">Coming Soon</span>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="1">
-            <div class="ico">🎨</div>
-            <h3>تم و کاستوم پت</h3>
-            <p>ظاهر و اسکین‌های بیشتر برای پیشی.</p>
-            <span class="tag">Coming Soon</span>
-          </article>
-          <article class="feat-card glass reveal" data-stagger="2">
-            <div class="ico">📣</div>
-            <h3>ایونت‌های فصلی بزرگ‌تر</h3>
-            <p>رویدادهای زمان‌دار با جوایز و رتبه‌بندی ویژه.</p>
-            <span class="tag">Coming Soon</span>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- LINKS -->
-    <section class="section" id="links">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <span class="eyebrow">Links</span>
-          <h2>لینک‌های رسمی</h2>
-        </div>
-        <div class="link-grid" id="social-grid"></div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="section" id="cta">
-      <div class="wrap">
-        <div class="cta-band glass reveal">
-          <h2>آماده‌ای MeowBot رو امتحان کنی؟</h2>
-          <p>وارد بله شو و ربات را در پیوی یا گروه باز کن.</p>
-          <a class="btn btn-primary" data-link="bot" href="#">باز کردن MeowBot</a>
-        </div>
+    <!-- SEARCH -->
+    <section class="view" id="view-search" data-view="search">
+      <h1 class="page-title">Search</h1>
+      <div class="search-panel">
+        <input type="search" class="field" id="global-search" placeholder="Games, achievements, sections…" />
+        <div class="search-results list" id="search-results"></div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-grid">
-      <div>
-        <div class="brand">MeowBot 🐱</div>
-        <p>Powered by Darkknight Studio</p>
-        <p style="margin-top:6px">Made with ❤️ by COMMANDER04</p>
-        <p style="margin-top:10px;font-size:.78rem;opacity:.9">© 2026 MeowBot — تمامی حقوق محفوظ است. بازنشر یا استفاده تجاری بدون مجوز ممنوع است.</p>
-      </div>
-      <div>
-        <h5>محصول</h5>
-        <a data-link="bot" href="#">MeowBot</a>
-        <a href="#features">ویژگی‌ها</a>
-        <a href="#future">آینده</a>
-      </div>
-      <div>
-        <h5>ارتباط</h5>
-        <a data-link="developerProfile" href="#">سازنده</a>
-        <a data-link="studio" href="#">Darkknight Studio</a>
-        <a data-link="officialChannel" href="#">کانال رسمی</a>
-      </div>
+  <nav class="bottom-nav" aria-label="App">
+    <div class="bottom-nav-inner">
+      <button type="button" class="nav-item active" data-nav="home"><span class="ni">⌂</span>Home</button>
+      <button type="button" class="nav-item" data-open-playground><span class="ni">▷</span>Play</button>
+      <button type="button" class="nav-item" data-nav="progress"><span class="ni">◈</span>Progress</button>
+      <button type="button" class="nav-item" data-nav="shop"><span class="ni">◇</span>Shop</button>
+      <button type="button" class="nav-item" data-nav="profile"><span class="ni">○</span>Profile</button>
     </div>
-    <div class="wrap footer-bottom">
-      <span>© 2026 MeowBot · All rights reserved</span>
-      <span>کلیه حقوق این پروژه محفوظ است</span>
-    </div>
-  </footer>
+  </nav>
 
   <div id="pg-overlay" aria-hidden="true"><div id="pg-view"></div></div>
-
-  <button type="button" id="to-top" aria-label="بالای صفحه">↑</button>
+  <button type="button" id="to-top" aria-label="Top">↑</button>
 
   <script src="js/config.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/themes.js"></script>
   <script src="js/achievements.js"></script>
+  <script src="js/daily.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/assistant.js"></script>
   <script src="js/games.js"></script>
   <script src="js/playground.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    }
+  </script>
 </body>
 </html>
