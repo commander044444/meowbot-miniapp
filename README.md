@@ -1,6 +1,6 @@
-# MeowBot Landing (Mini App)
+# MeowBot Landing
 
-سایت معرفی Premium برای **MeowBot** — بدون Login، بدون Backend، مناسب GitHub Pages و WebView بله.
+سایت معرفی رسمی **MeowBot** — بدون Login، مناسب WebView بله.
 
 ## URL
 
@@ -9,31 +9,20 @@ https://commander044444.github.io/meowbot-miniapp/
 ## ساختار
 
 ```
-meowbot-miniapp/
-├── index.html
-├── css/style.css
-├── js/config.js      ← لینک‌ها را اینجا عوض کن
-├── js/app.js
-├── assets/
-└── README.md
+index.html
+css/style.css
+js/config.js   ← لینک‌ها
+js/app.js
+assets/
 ```
 
 ## تنظیم لینک‌ها
 
-فایل `js/config.js`:
+در `js/config.js`:
 
-- `links.bot` — باز کردن ربات
-- `links.developerProfile` / `developerPv`
-- `links.studio` / `studioJoin`
-- `links.officialChannel`
-- `links.github`
+- `bot` → @empireeebot
+- `studio` → @darkknight_studio
+- `officialChannel` → @meownewsbot
+- `developerProfile` / `developerPv` / `developerMore`
 
-## Pages
-
-Settings → Pages → Deploy from branch → **main** → **/ (root)**
-
-## نکات
-
-- Scroll Reveal با IntersectionObserver
-- `prefers-reduced-motion` رعایت می‌شود
-- هیچ فراخوانی Bale.WebApp برای هویت کاربر نیست
+© 2026 MeowBot — All rights reserved.
