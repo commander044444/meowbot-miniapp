@@ -1,4 +1,4 @@
-const CACHE = "meowbot-v2-i18n-3";
+const CACHE = "meowbot-v2-i18n-4";
 const ASSETS = [
   "./",
   "./index.html",
