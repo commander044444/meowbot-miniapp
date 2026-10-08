@@ -2,92 +2,332 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0d0d1a" />
-  <meta name="description" content="MeowBot Mini App — بله" />
-  <title>خانه · MeowBot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060e" />
+  <meta name="description" content="MeowBot — ربات اجتماعی و سرگرمی برای بله. ساخته‌شده توسط COMMANDER04 · Darkknight Studio" />
+  <meta property="og:title" content="MeowBot 🐱" />
+  <meta property="og:description" content="ربات اجتماعی و سرگرمی برای بله" />
+  <meta property="og:type" content="website" />
+  <title>MeowBot 🐱 · معرفی</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="app">
-    <div class="logo-row">
-      <div class="logo-mark">🐱</div>
-      <div class="logo-text">
-        <h1>MeowBot</h1>
-        <p>Mini App · بله</p>
+  <div id="loader" aria-hidden="true"><div class="spin"></div></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-brand">
+        <span class="mark">🐱</span>
+        <span>MeowBot</span>
+      </a>
+      <nav class="nav-links" aria-label="منو">
+        <a href="#about">درباره</a>
+        <a href="#features">ویژگی‌ها</a>
+        <a href="#developer">سازنده</a>
+        <a href="#studio">استودیو</a>
+        <a href="#story">مسیر</a>
+        <a href="#links">لینک‌ها</a>
+      </nav>
+      <a class="nav-cta" data-link="bot" href="#">باز کردن ربات</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="منو" type="button">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer">
+      <a href="#about">درباره</a>
+      <a href="#features">ویژگی‌ها</a>
+      <a href="#developer">سازنده</a>
+      <a href="#studio">استودیو</a>
+      <a href="#story">مسیر</a>
+      <a href="#future">آینده</a>
+      <a href="#links">لینک‌ها</a>
+      <a data-link="bot" href="#">باز کردن ربات</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="hero-badge reveal">🐱 MeowBot · بله</div>
+          <h1 class="reveal" style="--d:80ms"><span data-brand-name>MeowBot</span></h1>
+          <p class="hero-lead reveal" style="--d:140ms" data-brand-tag>
+            ربات اجتماعی و سرگرمی برای بله
+          </p>
+          <p class="prose reveal" style="--d:180ms;margin-bottom:22px" data-brand-desc>
+            MeowBot یک ربات واقعی روی بله است؛ با میو کردن، پت، بازی، نبرد و سیستم اقتصادی برای گروه‌ها و پیوی.
+          </p>
+          <div class="btn-row reveal" style="--d:220ms">
+            <a class="btn btn-primary" data-link="bot" href="#">باز کردن ربات</a>
+            <a class="btn btn-ghost" href="#about">آشنایی بیشتر ↓</a>
+          </div>
+          <a class="scroll-cue reveal" style="--d:300ms" href="#about">
+            <span class="chev">↓</span>
+            اسکرول کن
+          </a>
+        </div>
+        <div class="hero-visual reveal" style="--d:160ms">
+          <span class="big">🐱</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">About</span>
+          <h2>درباره MeowBot</h2>
+        </div>
+        <div class="prose reveal" style="--d:80ms">
+          <p>
+            <strong>MeowBot</strong> یک ربات پیام‌رسان روی بله است که حول تجربه «میو کردن»، نگهداری پت مجازی، بازی‌های کوتاه، نبرد و اقتصاد داخل‌ربات طراحی شده.
+          </p>
+          <p>
+            هدفش این است که در گروه‌ها و چت خصوصی، تعامل ساده و سرگرم‌کننده بسازد؛ بدون پیچیدگی اضافه برای کاربر عادی.
+          </p>
+          <p>
+            پروژه به‌صورت واقعی روی زیرساخت Production (از جمله PostgreSQL و پنل مدیریت) توسعه داده می‌شود و این صفحه فقط معرفی برند و مسیر پروژه است — نه داشبورد حساب کاربری.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Features</span>
+          <h2>ویژگی‌های MeowBot</h2>
+          <p>بخشی از قابلیت‌هایی که در خود ربات فعال‌اند یا در مسیر توسعه قرار دارند.</p>
+        </div>
+        <div class="grid-3">
+          <article class="feat-card glass reveal" data-stagger="0">
+            <div class="ico">🤖</div>
+            <h3>هسته ربات</h3>
+            <p>میو کردن در گروه و پیوی، پاسخ‌های متنوع، کول‌داون و امتیاز فصلی.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="1">
+            <div class="ico">🐾</div>
+            <h3>سیستم پت</h3>
+            <p>نام‌گذاری، غذا، بازی، خواب و فروشگاه آیتم با دوام محدود.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="2">
+            <div class="ico">🪙</div>
+            <h3>اقتصاد</h3>
+            <p>سکه و امتیاز سراسری، فروشگاه، پاداش بازی و نبرد.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="3">
+            <div class="ico">🎮</div>
+            <h3>سرگرمی</h3>
+            <p>بازی‌های کوتاه داخل ربات با جایزه زمان‌بندی‌شده.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="4">
+            <div class="ico">⚔️</div>
+            <h3>نبرد</h3>
+            <p>مچ‌میکینگ صف و چالش در گروه با کول‌داون.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="5">
+            <div class="ico">🛡</div>
+            <h3>مدیریت</h3>
+            <p>پنل Owner/Admin، تیکت، گزارش باگ، نقش‌ها و لاگ فعالیت.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="6">
+            <div class="ico">📅</div>
+            <h3>ایونت و فصل</h3>
+            <p>ضریب XP/سکه موقت و رتبه‌بندی گروهی و جهانی.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="7">
+            <div class="ico">👥</div>
+            <h3>گروه و اجتماعی</h3>
+            <p>تنظیمات گروه توسط ادمین‌ها، رنکینگ جدا و گروه جهانی میو.</p>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="8">
+            <div class="ico">✨</div>
+            <h3>آینده</h3>
+            <p>اتصال عمیق‌تر Mini App به Backend و قابلیت‌های جدید.</p>
+            <span class="tag">Coming Soon</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVELOPER -->
+    <section class="section" id="developer">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Creator</span>
+          <h2>درباره سازنده</h2>
+        </div>
+        <p class="solo-quote reveal">این ربات و مینی‌اپ فقط به دست ۱ نفر ساخته شده.</p>
+        <div class="dev-card glass reveal" style="--d:100ms">
+          <div class="dev-avatar">C</div>
+          <div class="dev-meta">
+            <h3 data-dev-name>COMMANDER04</h3>
+            <div class="user" data-dev-user>@commander04</div>
+            <p class="bio" data-dev-bio>
+              توسعه‌دهنده بک‌اند و ربات‌های پیام‌رسان. تمرکز روی Python، معماری پایدار و تجربه کاربری تمیز در پروژه‌های دیجیتال.
+            </p>
+            <div class="btn-row" style="margin-top:14px">
+              <a class="btn btn-primary" data-link="developerProfile" href="#">باز کردن پروفایل</a>
+              <a class="btn btn-ghost" data-link="developerPv" href="#">باز کردن در PV</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDIO -->
+    <section class="section studio-section" id="studio">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Brand</span>
+          <h2>قدرت گرفته از Darkknight Studio</h2>
+        </div>
+        <div class="studio-card glass reveal">
+          <div class="studio-top">
+            <div class="studio-logo">⚔️</div>
+            <div>
+              <h3 data-studio-name>Darkknight Studio</h3>
+              <div class="sub" data-studio-tag>قدرت گرفته از Darkknight Studio</div>
+            </div>
+          </div>
+          <p class="desc" data-studio-desc>
+            استودیوی ساخت محصولات دیجیتال و ربات‌های پیام‌رسان. MeowBot زیر چتر این برند توسعه داده می‌شود.
+          </p>
+          <div class="btn-row">
+            <a class="btn btn-primary" data-link="studioJoin" href="#">عضویت / Join</a>
+            <a class="btn btn-ghost" data-link="studio" href="#">صفحه رسمی</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="section" id="story">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Timeline</span>
+          <h2>مسیر پروژه</h2>
+        </div>
+        <div class="timeline">
+          <div class="tl-item reveal">
+            <div class="tl-dot"></div>
+            <h4>شروع پروژه</h4>
+            <p>ایده ربات اجتماعی حول میو و تعامل گروهی روی بله شکل گرفت.</p>
+          </div>
+          <div class="tl-item reveal" style="--d:80ms">
+            <div class="tl-dot"></div>
+            <h4>ساخت MeowBot</h4>
+            <p>هسته ربات، امتیاز، گروه‌ها و پاسخ‌های میو پیاده‌سازی شد.</p>
+          </div>
+          <div class="tl-item reveal" style="--d:140ms">
+            <div class="tl-dot"></div>
+            <h4>توسعه قابلیت‌ها</h4>
+            <p>پت، فروشگاه، نبرد، بازی، ایونت، پنل ادمین و PostgreSQL اضافه شدند.</p>
+          </div>
+          <div class="tl-item reveal" style="--d:200ms">
+            <div class="tl-dot"></div>
+            <h4>ساخت Mini App</h4>
+            <p>صفحه معرفی Premium روی GitHub Pages برای نمایش برند و مسیر پروژه.</p>
+          </div>
+          <div class="tl-item reveal" style="--d:260ms">
+            <div class="tl-dot"></div>
+            <h4>توسعه آینده</h4>
+            <p>اتصال عمیق‌تر وب‌اپ به Backend و ادامه بهبود تجربه داخل ربات.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUTURE -->
+    <section class="section" id="future">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Roadmap</span>
+          <h2>آینده MeowBot</h2>
+          <p>ایده‌هایی که در صف توسعه‌اند — هنوز به‌عنوان قابلیت زنده ادعا نمی‌شوند.</p>
+        </div>
+        <div class="grid-3">
+          <article class="feat-card glass reveal" data-stagger="0">
+            <div class="ico">🔗</div>
+            <h3>همگام‌سازی وب‌اپ</h3>
+            <p>نمایش موجودی و آمار واقعی از همان دیتابیس ربات.</p>
+            <span class="tag">Coming Soon</span>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="1">
+            <div class="ico">🎨</div>
+            <h3>تم و کاستوم پت</h3>
+            <p>ظاهر و اسکین‌های بیشتر برای پیشی.</p>
+            <span class="tag">Coming Soon</span>
+          </article>
+          <article class="feat-card glass reveal" data-stagger="2">
+            <div class="ico">📣</div>
+            <h3>ایونت‌های فصلی بزرگ‌تر</h3>
+            <p>رویدادهای زمان‌دار با جوایز و رتبه‌بندی ویژه.</p>
+            <span class="tag">Coming Soon</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="section" id="links">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Links</span>
+          <h2>لینک‌های رسمی</h2>
+        </div>
+        <div class="link-grid" id="social-grid"></div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" id="cta">
+      <div class="wrap">
+        <div class="cta-band glass reveal">
+          <h2>آماده‌ای MeowBot رو امتحان کنی؟</h2>
+          <p>وارد بله شو و ربات را در پیوی یا گروه باز کن.</p>
+          <a class="btn btn-primary" data-link="bot" href="#">باز کردن MeowBot</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <div class="brand">MeowBot 🐱</div>
+        <p>Powered by Darkknight Studio</p>
+        <p style="margin-top:6px">Made with ❤️ by COMMANDER04</p>
+      </div>
+      <div>
+        <h5>محصول</h5>
+        <a data-link="bot" href="#">MeowBot</a>
+        <a href="#features">ویژگی‌ها</a>
+        <a href="#future">آینده</a>
+      </div>
+      <div>
+        <h5>ارتباط</h5>
+        <a data-link="developerProfile" href="#">سازنده</a>
+        <a data-link="studio" href="#">Darkknight Studio</a>
+        <a data-link="github" href="#">GitHub</a>
       </div>
     </div>
-
-    <p class="greeting">سلام <strong data-name>پیشی‌دوست</strong> ✨</p>
-
-    <div class="card card-glow">
-      <div class="stats-grid">
-        <div class="stat coin">
-          <div class="label">سکه</div>
-          <div class="value" data-coins>0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Level</div>
-          <div class="value" data-level>1</div>
-        </div>
-        <div class="stat xp" style="grid-column: 1 / -1">
-          <div class="label">XP · <span data-xp>0</span> / <span data-xp-need>100</span></div>
-          <div class="xp-bar"><div class="xp-fill" data-xp-bar></div></div>
-        </div>
-      </div>
+    <div class="wrap footer-bottom">
+      <span>© 2026 MeowBot</span>
+      <span>Static site · GitHub Pages</span>
     </div>
+  </footer>
 
-    <div class="card">
-      <div class="daily">
-        <div class="info">
-          <h3>🎁 جایزه روزانه</h3>
-          <p>هر ۲۴ ساعت سکه + XP بگیر</p>
-        </div>
-        <button class="btn btn-primary" id="btn-daily">دریافت</button>
-      </div>
-    </div>
+  <button type="button" id="to-top" aria-label="بالای صفحه">↑</button>
 
-    <p class="section-label">دسترسی سریع</p>
-    <div class="tiles">
-      <a class="tile" href="profile.html">
-        <div class="icon">👤</div>
-        <span>پروفایل</span>
-        <small>آمار و سطح</small>
-      </a>
-      <a class="tile shop" href="shop.html">
-        <div class="icon">🛒</div>
-        <span>فروشگاه</span>
-        <small>آیتم‌های پت</small>
-      </a>
-      <a class="tile games" href="games.html">
-        <div class="icon">🎮</div>
-        <span>بازی‌ها</span>
-        <small>سکه و XP</small>
-      </a>
-      <a class="tile board" href="leaderboard.html">
-        <div class="icon">🏅</div>
-        <span>لیدربورد</span>
-        <small>رتبه‌بندی</small>
-      </a>
-    </div>
-    <p class="hint">💡 داده‌های فعلی روی دستگاه ذخیره می‌شوند. بعد از اتصال Backend، با حساب بله همگام می‌شوند.</p>
-  </div>
-  <nav class="bottom-nav" aria-label="منو">
-    <div class="inner">
-      <a class="nav-item active" href="index.html"><span class="ni">🏠</span>خانه</a>
-      <a class="nav-item" href="profile.html"><span class="ni">👤</span>پروفایل</a>
-      <a class="nav-item" href="shop.html"><span class="ni">🛒</span>فروشگاه</a>
-      <a class="nav-item" href="games.html"><span class="ni">🎮</span>بازی</a>
-      <a class="nav-item" href="leaderboard.html"><span class="ni">🏅</span>رنک</a>
-    </div>
-  </nav>
+  <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
