@@ -1,86 +1,92 @@
 /**
- * Meow Playground — Hub, navigation, result screens
+ * Meow Playground hub — preserves all games via MeowGames
  */
-(function () {
+(function (w) {
   "use strict";
 
   const CATS = [
-    { id: "all", label: "همه", icon: "✨" },
-    { id: "popular", label: "محبوب", icon: "🔥" },
-    { id: "speed", label: "سرعت", icon: "⚡" },
-    { id: "brain", label: "فکری", icon: "🧠" },
-    { id: "meow", label: "Meow", icon: "🐱" },
-    { id: "arcade", label: "Arcade", icon: "🕹️" },
-    { id: "random", label: "تصادفی", icon: "🎲" },
-    { id: "fun", label: "سرگرمی", icon: "🎯" },
+    { id: "all", label: "All" },
+    { id: "popular", label: "Popular" },
+    { id: "speed", label: "Reaction" },
+    { id: "brain", label: "Memory" },
+    { id: "arcade", label: "Action" },
+    { id: "meow", label: "Meow" },
+    { id: "random", label: "Casual" },
   ];
 
-  // map fun -> random games too
-  function gamesInCat(cat) {
-    const list = window.MeowGames ? MeowGames.catalog : [];
-    if (cat === "all") return list;
-    if (cat === "popular") return list.filter((g) => g.popular);
-    if (cat === "fun") return list.filter((g) => g.cat === "random" || g.cat === "meow");
-    return list.filter((g) => g.cat === cat);
-  }
+  const SORTS = [
+    { id: "popular", label: "Popular" },
+    { id: "name", label: "A–Z" },
+    { id: "best", label: "Best score" },
+    { id: "recent", label: "Recent" },
+  ];
 
   let currentCat = "all";
+  let currentSort = "popular";
+  let searchQ = "";
   let activeGame = null;
   let gameRunning = false;
+  let gameStartedAt = 0;
 
   const resultMessages = {
-    high: [
-      "اوووه رکورد زدی! 🔥",
-      "پیشی بهت افتخار می‌کنه 😼",
-      "این یکی عالی بود!",
-      "داری می‌ترکونی! ⚡",
-      "رکورد جدید؟ جدی؟ 🏆",
-    ],
-    mid: [
-      "بد نبود! 👀",
-      "دوباره؟ این بار بهتر می‌تونی!",
-      "داری راه می‌افتی 🐱",
-      "خوب بود، هنوز جا برای بهتر شدن هست",
-      "میو! ادامه بده 🎮",
-    ],
-    low: [
-      "اشکال نداره، تمرین کن 😼",
-      "حوصله‌ت هنوز سر نرفته؟",
-      "یه بار دیگه امتحان کن!",
-      "اولین قدم‌ها همیشه سختن 💫",
-      "پیشی هنوز بهت ایمان داره 🐱",
-    ],
+    high: ["New personal best.", "That was clean.", "Strong run."],
+    mid: ["Solid.", "Keep going.", "Not bad."],
+    low: ["Warm-up done.", "Try again when ready.", "Practice helps."],
   };
-
-  const alwaysTips = [
-    "هر بازی یک قدم نزدیک‌تر به دستاورد بعدی 🌟",
-    "رکوردها فقط روی همین دستگاه ذخیره می‌شن",
-    "دسته‌های مختلف را امتحان کن — Explorer در انتظارته",
-    "واکنش زیر ۲۵۰ms = Speed Demon ⚡",
-    "۵۰ بازی = لقب Addicted 🔥",
-  ];
 
   function $(sel, root) {
     return (root || document).querySelector(sel);
   }
 
-  function openPlayground() {
+  function gamesInCat(cat) {
+    const list = (window.MeowGames && MeowGames.catalog) || [];
+    if (cat === "all") return list.slice();
+    if (cat === "popular") return list.filter((g) => g.popular);
+    return list.filter((g) => g.cat === cat);
+  }
+
+  function filteredList() {
+    let list = gamesInCat(currentCat);
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      list = list.filter(
+        (g) =>
+          g.name.toLowerCase().includes(q) ||
+          (g.desc || "").toLowerCase().includes(q) ||
+          g.id.includes(q)
+      );
+    }
+    const scores = MeowStorage.getGames();
+    if (currentSort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+    else if (currentSort === "best")
+      list.sort((a, b) => ((scores[b.id] || {}).best || 0) - ((scores[a.id] || {}).best || 0));
+    else if (currentSort === "recent")
+      list.sort((a, b) => ((scores[b.id] || {}).lastAt || 0) - ((scores[a.id] || {}).lastAt || 0));
+    else list.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0) || a.name.localeCompare(b.name));
+    return list;
+  }
+
+  function openPlayground(opts) {
     const overlay = $("#pg-overlay");
     if (!overlay) return;
     overlay.classList.add("open");
-    document.body.style.overflow = "hidden";
-    showHub();
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("pg-open");
+    if (opts && opts.game) startGame(opts.game);
+    else showHub();
   }
 
   function closePlayground() {
-    if (gameRunning) {
-      if (!confirm("بازی نیمه‌کاره است. خارج می‌شی؟")) return;
-    }
+    if (gameRunning && !confirm("Leave this game?")) return;
     gameRunning = false;
     activeGame = null;
     const overlay = $("#pg-overlay");
-    if (overlay) overlay.classList.remove("open");
-    document.body.style.overflow = "";
+    if (overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+    }
+    document.body.classList.remove("pg-open");
+    if (window.MeowApp && MeowApp.refreshChrome) MeowApp.refreshChrome();
   }
 
   function showHub() {
@@ -88,146 +94,166 @@
     activeGame = null;
     const view = $("#pg-view");
     if (!view) return;
-    const stats = MeowStorage.getStats();
-    const scores = MeowStorage.getScores();
+    const ch = MeowDaily.getChallenge();
+    const p = MeowStorage.getProgress();
     view.innerHTML = `
-      <div class="pg-hub">
-        <div class="pg-hub-head">
-          <div>
-            <h2>MEOW PLAYGROUND</h2>
-            <p>یک بازی انتخاب کن و شروع کن 😼</p>
-          </div>
-          <div class="pg-hub-actions">
-            <button type="button" class="pg-icon-btn" id="pg-mute" title="صدا">${MeowStorage.getSettings().muted ? "🔇" : "🔊"}</button>
-            <button type="button" class="pg-icon-btn" id="pg-stats-btn" title="آمار">📊</button>
-            <button type="button" class="pg-icon-btn" id="pg-close" title="بستن">✕</button>
-          </div>
+      <header class="pg-top">
+        <div>
+          <h1 class="pg-title">Playground</h1>
+          <p class="pg-sub">Choose a game</p>
         </div>
-        <div class="pg-cats" id="pg-cats"></div>
-        <div class="pg-grid" id="pg-grid"></div>
-      </div>`;
+        <button type="button" class="icon-btn" id="pg-close" aria-label="Close">×</button>
+      </header>
+      <div class="pg-toolbar">
+        <input type="search" class="pg-search" id="pg-search" placeholder="Search games" value="${searchQ.replace(/"/g, "")}" />
+        <select id="pg-sort" class="pg-select" aria-label="Sort">
+          ${SORTS.map((s) => `<option value="${s.id}" ${s.id === currentSort ? "selected" : ""}>${s.label}</option>`).join("")}
+        </select>
+      </div>
+      <div class="pg-cats" id="pg-cats"></div>
+      <section class="pg-daily-bar">
+        <div>
+          <span class="label">Daily</span>
+          <strong>${ch.label}</strong>
+          <span class="muted">${ch.done ? "Completed" : "In progress"}</span>
+        </div>
+        ${!ch.done ? `<button type="button" class="btn btn-sm" id="pg-daily-play">Play</button>` : ""}
+      </section>
+      <div class="pg-meta-line">
+        <span>Lv ${p.level}</span>
+        <span>${p.totalGames || 0} plays</span>
+        <span>Best ${p.bestScore || 0}</span>
+      </div>
+      <div class="pg-grid" id="pg-grid"></div>`;
     $("#pg-close").onclick = closePlayground;
-    $("#pg-stats-btn").onclick = showStats;
-    $("#pg-mute").onclick = () => {
-      const s = MeowStorage.getSettings();
-      s.muted = !s.muted;
-      MeowStorage.setSettings(s);
-      $("#pg-mute").textContent = s.muted ? "🔇" : "🔊";
+    $("#pg-search").oninput = (e) => {
+      searchQ = e.target.value.trim();
+      renderGrid();
     };
+    $("#pg-sort").onchange = (e) => {
+      currentSort = e.target.value;
+      renderGrid();
+    };
+    if ($("#pg-daily-play")) {
+      $("#pg-daily-play").onclick = () => startGame(ch.game);
+    }
     renderCats();
-    renderGrid(scores);
+    renderGrid();
   }
 
   function renderCats() {
     const box = $("#pg-cats");
     box.innerHTML = CATS.map(
       (c) =>
-        `<button type="button" class="pg-cat ${c.id === currentCat ? "active" : ""}" data-cat="${c.id}">${c.icon} ${c.label}</button>`
+        `<button type="button" class="chip ${c.id === currentCat ? "active" : ""}" data-cat="${c.id}">${c.label}</button>`
     ).join("");
-    box.querySelectorAll(".pg-cat").forEach((b) => {
+    box.querySelectorAll(".chip").forEach((b) => {
       b.onclick = () => {
         currentCat = b.dataset.cat;
         renderCats();
-        renderGrid(MeowStorage.getScores());
+        renderGrid();
       };
     });
   }
 
-  function renderGrid(scores) {
+  function renderGrid() {
     const grid = $("#pg-grid");
-    const list = gamesInCat(currentCat);
+    const list = filteredList();
+    const scores = MeowStorage.getGames();
     if (!list.length) {
-      grid.innerHTML = '<p class="pg-empty">بازی‌ای در این دسته نیست</p>';
+      grid.innerHTML = '<p class="empty-state">No games match.</p>';
       return;
     }
     grid.innerHTML = list
       .map((g) => {
         const sc = scores[g.id] || {};
         const best =
-          sc.bestTime != null
-            ? `Best: ${sc.bestTime}ms`
-            : sc.best
-              ? `Best: ${sc.best}`
-              : "هنوز بازی نشده";
-        return `<button type="button" class="pg-card" data-id="${g.id}">
-          <div class="pg-card-ico">${g.icon}</div>
-          <div class="pg-card-body">
-            <strong>${g.name}</strong>
-            <span>${g.desc}</span>
-            <em>${best}</em>
+          sc.bestTime != null ? sc.bestTime + " ms" : sc.best ? String(sc.best) : "—";
+        return `<article class="game-card">
+          <div class="game-card-main">
+            <h3>${g.name}</h3>
+            <p>${g.desc || ""}</p>
+            <span class="best">Best ${best}</span>
           </div>
-          <span class="pg-play-tag">PLAY</span>
-        </button>`;
+          <button type="button" class="btn btn-sm" data-play="${g.id}">Play</button>
+        </article>`;
       })
       .join("");
-    grid.querySelectorAll(".pg-card").forEach((card) => {
-      card.onclick = () => startGame(card.dataset.id);
+    grid.querySelectorAll("[data-play]").forEach((b) => {
+      b.onclick = () => startGame(b.getAttribute("data-play"));
     });
   }
 
   function startGame(id) {
     const g = MeowGames.registry[id];
-    if (!g) return;
+    if (!g) {
+      showHub();
+      return;
+    }
+    const scores = MeowStorage.getGames();
+    const isNew = !(scores[id] && scores[id].plays);
     activeGame = g;
     gameRunning = true;
+    gameStartedAt = Date.now();
     const view = $("#pg-view");
     view.innerHTML = `
       <div class="pg-game">
-        <div class="pg-game-bar">
-          <button type="button" class="pg-icon-btn" id="pg-back">←</button>
-          <div class="pg-game-title">${g.icon} ${g.name}</div>
-          <button type="button" class="pg-icon-btn" id="pg-close2">✕</button>
+        <header class="pg-game-bar">
+          <button type="button" class="icon-btn" id="pg-back" aria-label="Back">←</button>
+          <div class="pg-game-title">${g.name}</div>
+          <button type="button" class="icon-btn" id="pg-close2" aria-label="Close">×</button>
+        </header>
+        <div class="pg-start" id="pg-start">
+          <p class="pg-sub">${g.desc || ""}</p>
+          <p class="muted">${isNew ? MeowAssistant.lineFor("newGame") : "Best: " + ((scores[id] || {}).best || 0)}</p>
+          <button type="button" class="btn btn-primary" id="pg-go">Start</button>
         </div>
-        <div class="pg-game-root" id="pg-game-root"></div>
+        <div class="pg-game-root" id="pg-game-root" hidden></div>
       </div>`;
     $("#pg-back").onclick = () => {
-      if (gameRunning && !confirm("بازی نیمه‌کاره است. برگردی؟")) return;
+      if (gameRunning && !$("#pg-start") && !confirm("Leave this game?")) return;
       showHub();
     };
     $("#pg-close2").onclick = closePlayground;
-    const root = $("#pg-game-root");
-    const api = {
-      end(result) {
-        gameRunning = false;
-        finishGame(g, result || {});
-      },
-      toast(msg) {
-        const t = document.createElement("div");
-        t.className = "pg-toast";
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 2000);
-      },
-      sound() {},
+    $("#pg-go").onclick = () => {
+      $("#pg-start").hidden = true;
+      const root = $("#pg-game-root");
+      root.hidden = false;
+      gameStartedAt = Date.now();
+      const api = {
+        end(result) {
+          gameRunning = false;
+          finishGame(g, result || {});
+        },
+        toast(msg) {
+          const t = document.createElement("div");
+          t.className = "toast";
+          t.textContent = msg;
+          document.body.appendChild(t);
+          setTimeout(() => t.remove(), 2000);
+        },
+        sound() {},
+      };
+      try {
+        g.play(root, api);
+      } catch (e) {
+        console.error(e);
+        api.toast("Game error");
+        showHub();
+      }
     };
-    try {
-      g.play(root, api);
-    } catch (e) {
-      console.error(e);
-      api.toast("خطا در بازی");
-      showHub();
-    }
   }
 
   function finishGame(g, result) {
+    const playTimeMs = Date.now() - gameStartedAt;
     const save = MeowStorage.saveGameResult(g.id, {
       score: result.score || 0,
       bestTime: result.bestTime,
-      category: g.cat === "random" ? "random" : g.cat,
+      category: g.cat,
+      perfect: result.perfect,
+      playTimeMs,
     });
-    // mark popular category if popular game
-    if (g.popular) {
-      const st = MeowStorage.getStats();
-      st.categoriesPlayed = st.categoriesPlayed || {};
-      st.categoriesPlayed.popular = true;
-      st.categoriesPlayed.fun = true;
-      MeowStorage.setStats(st);
-    }
-    const st2 = MeowStorage.getStats();
-    st2.categoriesPlayed = st2.categoriesPlayed || {};
-    st2.categoriesPlayed[g.cat] = true;
-    MeowStorage.setStats(st2);
-
+    MeowDaily.reportGame(g.id, result);
     const unlocked = MeowAchievements.checkAfterGame(g, result, save);
     const score = result.score || 0;
     const pool =
@@ -237,90 +263,54 @@
           ? resultMessages.mid
           : resultMessages.low;
     const msg = pool[Math.floor(Math.random() * pool.length)];
-    const tip = alwaysTips[Math.floor(Math.random() * alwaysTips.length)];
-
-    // اگر دستاورد جدیدی نبود، یک «ستاره بازی» نمایشی بده
-    const starLine = unlocked.length
-      ? unlocked
-          .map((a) => `<div class="pg-ach-unlock">${a.title}<small>${a.desc}</small></div>`)
-          .join("")
-      : `<div class="pg-ach-unlock soft">✨ بازی تموم شد!<small>${tip}</small></div>`;
+    const assist = save.isNewRecord
+      ? MeowAssistant.lineFor("record")
+      : save.leveled
+        ? MeowAssistant.lineFor("level")
+        : msg;
 
     const view = $("#pg-view");
     view.innerHTML = `
       <div class="pg-result">
-        <p class="pg-result-msg">${msg}</p>
-        ${save.isNewRecord ? '<div class="pg-new-record">🏆 NEW RECORD!</div>' : ""}
-        <h2>GAME OVER</h2>
-        <div class="pg-result-stats">
+        <p class="assist-line">${assist}</p>
+        ${save.isNewRecord ? '<p class="record-flag">New record</p>' : ""}
+        <h2>Result</h2>
+        <div class="result-grid">
           <div><span>Score</span><strong>${score}</strong></div>
           <div><span>Best</span><strong>${save.best}</strong></div>
-          ${result.bestTime != null ? `<div><span>Time</span><strong>${result.bestTime}ms</strong></div>` : ""}
-          ${result.label ? `<div><span>نتیجه</span><strong>${result.label}</strong></div>` : ""}
+          <div><span>XP</span><strong>+${save.xpGain || 0}</strong></div>
+          ${result.bestTime != null ? `<div><span>Time</span><strong>${result.bestTime} ms</strong></div>` : ""}
         </div>
-        <div class="pg-unlocks">${starLine}</div>
-        <div class="pg-result-actions">
-          <button type="button" class="pg-btn pg-btn-primary" id="pg-again">🔄 Play Again</button>
-          <button type="button" class="pg-btn" id="pg-more">🎮 More Games</button>
+        ${
+          unlocked.length
+            ? `<div class="unlock-list">${unlocked
+                .map((a) => `<div class="unlock-item"><strong>${a.title}</strong><span>${a.desc}</span></div>`)
+                .join("")}</div>`
+            : ""
+        }
+        <div class="result-actions">
+          <button type="button" class="btn btn-primary" id="pg-again">Replay</button>
+          <button type="button" class="btn" id="pg-more">All games</button>
         </div>
       </div>`;
     $("#pg-again").onclick = () => startGame(g.id);
     $("#pg-more").onclick = showHub;
   }
 
-  function showStats() {
-    const st = MeowStorage.getStats();
-    const ach = MeowStorage.getAchievements();
-    const scores = MeowStorage.getScores();
-    const favName = st.favoriteGame
-      ? (MeowGames.registry[st.favoriteGame] || {}).name || st.favoriteGame
-      : "—";
-    const view = $("#pg-view");
-    view.innerHTML = `
-      <div class="pg-stats-panel">
-        <div class="pg-game-bar">
-          <button type="button" class="pg-icon-btn" id="pg-back-s">←</button>
-          <div class="pg-game-title">📊 MEOW ARCADE</div>
-          <span></span>
-        </div>
-        <div class="pg-stats-grid">
-          <div class="pg-stat"><span>بازی‌ها</span><strong>${st.gamesPlayed || 0}</strong></div>
-          <div class="pg-stat"><span>مجموع امتیاز</span><strong>${st.totalScore || 0}</strong></div>
-          <div class="pg-stat"><span>بهترین امتیاز</span><strong>${st.bestScore || 0}</strong></div>
-          <div class="pg-stat"><span>بهترین واکنش</span><strong>${st.bestReaction != null ? st.bestReaction + "ms" : "—"}</strong></div>
-          <div class="pg-stat"><span>بازی محبوب</span><strong>${favName}</strong></div>
-          <div class="pg-stat"><span>دستاوردها</span><strong>${Object.keys(ach).length}/${MeowAchievements.DEFS.length}</strong></div>
-        </div>
-        <h3 class="pg-sub">Achievements</h3>
-        <div class="pg-ach-list">
-          ${MeowAchievements.DEFS.map(
-            (d) =>
-              `<div class="pg-ach ${ach[d.id] ? "on" : ""}">${d.title}<small>${d.desc}</small></div>`
-          ).join("")}
-        </div>
-      </div>`;
-    $("#pg-back-s").onclick = showHub;
-  }
-
   function init() {
     document.querySelectorAll("[data-open-playground]").forEach((el) => {
       el.addEventListener("click", (e) => {
         e.preventDefault();
-        openPlayground();
+        const g = el.getAttribute("data-game");
+        openPlayground(g ? { game: g } : null);
       });
     });
-    // count for display
-    const countEl = document.querySelector("[data-game-count]");
-    if (countEl && window.MeowGames) {
-      countEl.textContent = String(MeowGames.catalog.length);
-    }
+    const c = document.querySelector("[data-game-count]");
+    if (c && window.MeowGames) c.textContent = String(MeowGames.catalog.length);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 
-  window.MeowPlayground = { open: openPlayground, close: closePlayground };
-})();
+  w.MeowPlayground = { open: openPlayground, close: closePlayground, showHub };
+})(window);
