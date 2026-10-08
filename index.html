@@ -18,15 +18,16 @@
     <div class="topbar-inner">
       <a href="#home" class="brand" data-nav="home"><span class="brand-mark">M</span> MeowBot</a>
       <nav class="desktop-nav" aria-label="Main">
-        <a href="#home" data-nav="home">Home</a>
-        <a href="#playground" data-nav="playground">Playground</a>
-        <a href="#progress" data-nav="progress">Progress</a>
-        <a href="#shop" data-nav="shop">Shop</a>
-        <a href="#profile" data-nav="profile">Profile</a>
-        <a href="#about" data-nav="about">About</a>
+        <a href="#home" data-nav="home" data-i18n="nav_home">خانه</a>
+        <a href="#playground" data-nav="playground" data-i18n="nav_playground">زمین‌بازی</a>
+        <a href="#progress" data-nav="progress" data-i18n="nav_progress">پیشرفت</a>
+        <a href="#shop" data-nav="shop" data-i18n="nav_shop">فروشگاه</a>
+        <a href="#profile" data-nav="profile" data-i18n="nav_profile">پروفایل</a>
+        <a href="#about" data-nav="about" data-i18n="nav_about">درباره</a>
       </nav>
       <div class="top-actions">
-        <button type="button" class="icon-btn" id="btn-search" aria-label="Search">⌕</button>
+        <button type="button" class="lang-toggle" id="btn-lang" title="Language">EN</button>
+        <button type="button" class="icon-btn" id="btn-search" data-i18n-aria="nav_search" aria-label="جستجو">⌕</button>
       </div>
     </div>
   </header>
@@ -37,17 +38,17 @@
       <div class="hero">
         <div>
           <h1>MeowBot</h1>
-          <p class="lede" data-brand-desc>A social entertainment bot for Bale — with an offline arcade you can play anytime.</p>
+          <p class="lede" data-i18n="hero_lede" data-brand-desc>ربات اجتماعی و سرگرمی برای بله — با یک آرکید آفلاین که هر وقت بخوای می‌تونی بازی کنی.</p>
           <div class="hero-actions">
-            <button type="button" class="btn btn-primary" data-open-playground>Open Playground</button>
-            <button type="button" class="btn btn-ghost" data-nav="about">About</button>
+            <button type="button" class="btn btn-primary" data-open-playground data-i18n="open_playground">ورود به زمین‌بازی</button>
+            <button type="button" class="btn btn-ghost" data-nav="about" data-i18n="about_btn">درباره</button>
           </div>
           <div class="assist-chip" id="home-assist"></div>
           <div class="stat-row">
-            <div><span>Games</span><strong data-stat-games>0</strong></div>
-            <div><span>Level</span><strong data-stat-level>1</strong></div>
-            <div><span>XP</span><strong data-stat-xp>0</strong></div>
-            <div><span>Achievements</span><strong data-stat-ach>0</strong></div>
+            <div><span data-i18n="games">بازی‌ها</span><strong data-stat-games>0</strong></div>
+            <div><span data-i18n="level">سطح</span><strong data-stat-level>1</strong></div>
+            <div><span data-i18n="xp">تجربه</span><strong data-stat-xp>0</strong></div>
+            <div><span data-i18n="achievements">دستاوردها</span><strong data-stat-ach>0</strong></div>
           </div>
           <div class="xp-line"><i data-xp-bar></i></div>
         </div>
@@ -55,107 +56,107 @@
       </div>
 
       <div class="section">
-        <div class="section-label">Quick access</div>
+        <div class="section-label" data-i18n="quick_access">دسترسی سریع</div>
         <div class="list">
           <button type="button" class="list-row" data-open-playground>
-            <div class="meta"><strong>Playground</strong><span><span data-game-count>0</span> playable games</span></div>
+            <div class="meta"><strong data-i18n="qa_playground">زمین‌بازی</strong><span><span data-game-count>0</span> <span data-i18n="qa_playground_sub">بازی قابل‌اجرا</span></span></div>
             <span class="trail">→</span>
           </button>
           <button type="button" class="list-row" data-nav="progress">
-            <div class="meta"><strong>Progress</strong><span>Level, XP, achievements</span></div>
+            <div class="meta"><strong data-i18n="qa_progress">پیشرفت</strong><span data-i18n="qa_progress_sub">سطح، تجربه، دستاوردها</span></div>
             <span class="trail">→</span>
           </button>
           <button type="button" class="list-row" data-nav="shop">
-            <div class="meta"><strong>Shop</strong><span>Themes and cosmetics</span></div>
+            <div class="meta"><strong data-i18n="qa_shop">فروشگاه</strong><span data-i18n="qa_shop_sub">تم و ظاهر</span></div>
             <span class="trail">→</span>
           </button>
           <button type="button" class="list-row" data-nav="world">
-            <div class="meta"><strong>Meow World</strong><span>Navigate the app</span></div>
+            <div class="meta"><strong data-i18n="qa_world">دنیای میو</strong><span data-i18n="qa_world_sub">جابه‌جایی در اپ</span></div>
             <span class="trail">→</span>
           </button>
         </div>
       </div>
 
       <div class="section">
-        <div class="section-label">Daily challenge</div>
+        <div class="section-label" data-i18n="daily_label">چالش روزانه</div>
         <div class="panel" id="home-daily"></div>
       </div>
 
       <div class="section">
-        <div class="section-label">Featured</div>
+        <div class="section-label" data-i18n="featured">منتخب</div>
         <div class="panel" id="home-featured"></div>
       </div>
     </section>
 
     <!-- PROGRESS -->
     <section class="view" id="view-progress" data-view="progress">
-      <h1 class="page-title">Progress</h1>
-      <p class="lede">Local progression only. Nothing leaves this device.</p>
+      <h1 class="page-title" data-i18n="progress_title">پیشرفت</h1>
+      <p class="lede" data-i18n="progress_lede">پیشرفت فقط روی همین دستگاه ذخیره می‌شود.</p>
       <div class="panel" style="margin-top:16px" id="progress-panel"></div>
       <div class="section" style="margin-top:28px">
-        <div class="section-label">Achievements</div>
+        <div class="section-label" data-i18n="achievements">دستاوردها</div>
         <div class="ach-grid" id="ach-grid"></div>
       </div>
       <div class="section">
-        <div class="section-label">Statistics</div>
+        <div class="section-label" data-i18n="stats">آمار</div>
         <div class="panel" id="stats-panel"></div>
       </div>
     </section>
 
     <!-- SHOP -->
     <section class="view" id="view-shop" data-view="shop">
-      <h1 class="page-title">Shop</h1>
-      <p class="lede">Cosmetic unlocks with arcade coins. No real money.</p>
-      <p class="muted" style="margin-top:8px">Balance: <strong data-currency>0</strong></p>
+      <h1 class="page-title" data-i18n="shop_title">فروشگاه</h1>
+      <p class="lede" data-i18n="shop_lede">ظاهر با سکهٔ آرکید. پول واقعی نیست.</p>
+      <p class="muted" style="margin-top:8px"><span data-i18n="balance">موجودی</span>: <strong data-currency>0</strong></p>
       <div class="panel" style="margin-top:16px" id="shop-list"></div>
     </section>
 
     <!-- PROFILE -->
     <section class="view" id="view-profile" data-view="profile">
-      <h1 class="page-title">Profile</h1>
+      <h1 class="page-title" data-i18n="profile_title">پروفایل</h1>
       <div class="profile-head" id="profile-head"></div>
       <div class="panel">
         <div class="form-row">
-          <label for="pf-name">Name</label>
+          <label for="pf-name" data-i18n="name">نام</label>
           <input class="field" id="pf-name" maxlength="24" />
         </div>
         <div class="form-row">
-          <label for="pf-bio">Bio</label>
+          <label for="pf-bio" data-i18n="bio">بیو</label>
           <textarea class="field" id="pf-bio" rows="3" maxlength="120"></textarea>
         </div>
-        <button type="button" class="btn btn-primary" id="pf-save">Save</button>
+        <button type="button" class="btn btn-primary" id="pf-save" data-i18n="save">ذخیره</button>
       </div>
       <div class="section" style="margin-top:24px">
-        <div class="section-label">Theme</div>
+        <div class="section-label" data-i18n="theme">تم</div>
         <div id="theme-chips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
       </div>
     </section>
 
     <!-- WORLD -->
     <section class="view" id="view-world" data-view="world">
-      <h1 class="page-title">Meow World</h1>
-      <p class="lede">Jump to any area of the app.</p>
+      <h1 class="page-title" data-i18n="world_title">دنیای میو</h1>
+      <p class="lede" data-i18n="world_lede">به هر بخش از اپ برو.</p>
       <div class="world-grid" style="margin-top:18px">
-        <button type="button" class="world-tile" data-nav="home"><strong>Home</strong><span>Overview</span></button>
-        <button type="button" class="world-tile" data-open-playground><strong>Arcade</strong><span>All games</span></button>
-        <button type="button" class="world-tile" data-nav="progress"><strong>Achievements</strong><span>Progress</span></button>
-        <button type="button" class="world-tile" data-nav="shop"><strong>Shop</strong><span>Cosmetics</span></button>
-        <button type="button" class="world-tile" data-nav="profile"><strong>Profile</strong><span>You</span></button>
-        <button type="button" class="world-tile" id="world-daily"><strong>Daily</strong><span>Today's challenge</span></button>
+        <button type="button" class="world-tile" data-nav="home"><strong data-i18n="nav_home">خانه</strong><span data-i18n="overview">نمای کلی</span></button>
+        <button type="button" class="world-tile" data-open-playground><strong data-i18n="arcade">آرکید</strong><span data-i18n="all_games">همه بازی‌ها</span></button>
+        <button type="button" class="world-tile" data-nav="progress"><strong data-i18n="achievements">دستاوردها</strong><span data-i18n="nav_progress">پیشرفت</span></button>
+        <button type="button" class="world-tile" data-nav="shop"><strong data-i18n="nav_shop">فروشگاه</strong><span data-i18n="qa_shop_sub">تم و ظاهر</span></button>
+        <button type="button" class="world-tile" data-nav="profile"><strong data-i18n="nav_profile">پروفایل</strong><span data-i18n="you">تو</span></button>
+        <button type="button" class="world-tile" id="world-daily"><strong data-i18n="daily">روزانه</strong><span data-i18n="today_challenge">چالش امروز</span></button>
       </div>
     </section>
 
     <!-- ABOUT -->
     <section class="view" id="view-about" data-view="about">
-      <h1 class="page-title">About MeowBot</h1>
+      <h1 class="page-title" data-i18n="about_title">درباره MeowBot</h1>
       <p class="lede" style="margin-top:8px" data-brand-desc></p>
       <div class="panel" style="margin-top:20px">
-        <p class="muted" style="margin-bottom:10px">This bot and mini app were built by one person.</p>
+        <p class="muted" style="margin-bottom:10px" data-i18n="built_by_one">این ربات و مینی‌اپ فقط به دست یک نفر ساخته شده.</p>
         <strong data-dev-name>COMMANDER04</strong>
         <p class="muted" data-dev-user>@commander04</p>
         <p style="margin-top:8px;font-size:0.9rem" data-dev-bio></p>
         <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
-          <a class="btn btn-sm" data-link="developerProfile" href="#">Profile</a>
+          <a class="btn btn-sm" data-link="developerProfile" href="#" data-i18n="profile">پروفایل</a>
           <a class="btn btn-sm btn-ghost" data-link="developerMore" href="#">More</a>
         </div>
       </div>
@@ -163,22 +164,22 @@
         <strong data-studio-name>Darkknight Studio</strong>
         <p class="muted" style="margin-top:6px" data-studio-desc></p>
         <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
-          <a class="btn btn-sm" data-link="studio" href="#">Studio</a>
-          <a class="btn btn-sm btn-ghost" data-link="bot" href="#">Open bot</a>
-          <a class="btn btn-sm btn-ghost" data-link="officialChannel" href="#">Channel</a>
+          <a class="btn btn-sm" data-link="studio" href="#" data-i18n="studio">استودیو</a>
+          <a class="btn btn-sm btn-ghost" data-link="bot" href="#" data-i18n="open_bot">باز کردن ربات</a>
+          <a class="btn btn-sm btn-ghost" data-link="officialChannel" href="#" data-i18n="channel">کانال</a>
         </div>
       </div>
       <div class="footer-mini">
-        <p>© 2026 MeowBot · All rights reserved</p>
-        <p style="margin-top:4px">Powered by Darkknight Studio · Made by COMMANDER04</p>
+        <p>© 2026 MeowBot · <span data-i18n="rights">تمامی حقوق محفوظ است</span></p>
+        <p style="margin-top:4px">Darkknight Studio · COMMANDER04</p>
       </div>
     </section>
 
     <!-- SEARCH -->
     <section class="view" id="view-search" data-view="search">
-      <h1 class="page-title">Search</h1>
+      <h1 class="page-title" data-i18n="search_title">جستجو</h1>
       <div class="search-panel">
-        <input type="search" class="field" id="global-search" placeholder="Games, achievements, sections…" />
+        <input type="search" class="field" id="global-search" data-i18n-placeholder="search_ph" placeholder="بازی، دستاورد، بخش…" />
         <div class="search-results list" id="search-results"></div>
       </div>
     </section>
@@ -186,11 +187,26 @@
 
   <nav class="bottom-nav" aria-label="App">
     <div class="bottom-nav-inner">
-      <button type="button" class="nav-item active" data-nav="home"><span class="ni">⌂</span>Home</button>
-      <button type="button" class="nav-item" data-open-playground><span class="ni">▷</span>Play</button>
-      <button type="button" class="nav-item" data-nav="progress"><span class="ni">◈</span>Progress</button>
-      <button type="button" class="nav-item" data-nav="shop"><span class="ni">◇</span>Shop</button>
-      <button type="button" class="nav-item" data-nav="profile"><span class="ni">○</span>Profile</button>
+      <button type="button" class="nav-item active" data-nav="home">
+        <span class="ni-wrap"><span class="ni ni-home"></span></span>
+        <span class="nav-label" data-i18n="nav_home">خانه</span>
+      </button>
+      <button type="button" class="nav-item nav-item-play" data-open-playground>
+        <span class="ni-wrap play-wrap"><span class="ni ni-play"></span></span>
+        <span class="nav-label" data-i18n="nav_play">بازی</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="progress">
+        <span class="ni-wrap"><span class="ni ni-progress"></span></span>
+        <span class="nav-label" data-i18n="nav_progress">پیشرفت</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="shop">
+        <span class="ni-wrap"><span class="ni ni-shop"></span></span>
+        <span class="nav-label" data-i18n="nav_shop">فروشگاه</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="profile">
+        <span class="ni-wrap"><span class="ni ni-profile"></span></span>
+        <span class="nav-label" data-i18n="nav_profile">پروفایل</span>
+      </button>
     </div>
   </nav>
 
@@ -198,6 +214,7 @@
   <button type="button" id="to-top" aria-label="Top">↑</button>
 
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/achievements.js"></script>
