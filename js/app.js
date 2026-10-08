@@ -133,11 +133,12 @@
     const ach = MeowStorage.getAchievements();
     const grid = $("#ach-grid");
     if (grid) {
-      grid.innerHTML = MeowAchievements.DEFS.map((d) => {
+      const tt = MeowI18n.t;
+      grid.innerHTML = MeowAchievements.allLocalized().map((d) => {
         const on = !!ach[d.id];
         return `<div class="ach-item ${on ? "on" : ""} ${d.hidden && !on ? "hidden-ach" : ""}">
-          <strong>${d.hidden && !on ? "Hidden" : d.title}</strong>
-          <span>${d.hidden && !on ? "Keep exploring" : d.desc}</span>
+          <strong>${d.hidden && !on ? tt("hidden_ach") : d.title}</strong>
+          <span>${d.hidden && !on ? (MeowI18n.getLang() === "en" ? "Keep exploring" : "ادامه بده و کشف کن") : d.desc}</span>
         </div>`;
       }).join("");
     }
@@ -174,7 +175,7 @@
         return `<div class="shop-item">
           <div class="info">
             <strong>${item.name}</strong>
-            <span>${item.desc} · ${item.price === 0 ? "Free" : item.price + " coins"}</span>
+            <span>${item.desc} · ${item.price === 0 ? MeowI18n.t("free") : item.price + " " + MeowI18n.t("coins")}</span>
           </div>
           ${
             owned
@@ -210,8 +211,8 @@
       head.innerHTML = `
         <div class="avatar-lg ${framed ? "framed" : ""}">${(u.name || "P").charAt(0).toUpperCase()}</div>
         <div>
-          <strong>${u.name || "Player"}</strong>
-          <p class="muted" style="font-size:0.8rem">Level ${p.level}</p>
+          <strong>${u.name || (MeowI18n.getLang() === "en" ? "Player" : "بازیکن")}</strong>
+          <p class="muted" style="font-size:0.8rem">${MeowI18n.t("level")} ${p.level}</p>
         </div>`;
     }
     $("#pf-name").value = u.name || "";
@@ -271,13 +272,24 @@
           rows.push({ type: "game", id: g.id, title: g.name, sub: g.desc });
         }
       });
-      MeowAchievements.DEFS.forEach((a) => {
-        if (!a.hidden && (a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q))) {
+      MeowAchievements.allLocalized().forEach((a) => {
+        if (!a.hidden && ((a.title || "").toLowerCase().includes(q) || (a.desc || "").toLowerCase().includes(q))) {
           rows.push({ type: "ach", title: a.title, sub: a.desc });
         }
       });
-      ["home", "progress", "shop", "profile", "about", "world"].forEach((s) => {
-        if (s.includes(q)) rows.push({ type: "nav", id: s, title: s, sub: "Section" });
+      const navMap = {
+        home: MeowI18n.t("nav_home"),
+        progress: MeowI18n.t("nav_progress"),
+        shop: MeowI18n.t("nav_shop"),
+        profile: MeowI18n.t("nav_profile"),
+        about: MeowI18n.t("nav_about"),
+        world: MeowI18n.t("world_title"),
+      };
+      Object.keys(navMap).forEach((s) => {
+        const title = navMap[s];
+        if (s.includes(q) || title.toLowerCase().includes(q)) {
+          rows.push({ type: "nav", id: s, title: title, sub: MeowI18n.t("section") });
+        }
       });
       out.innerHTML = rows
         .slice(0, 20)
@@ -322,7 +334,7 @@
     }
     $("#pf-save").onclick = () => {
       const u = MeowStorage.getUser();
-      u.name = $("#pf-name").value.trim() || "Player";
+      u.name = $("#pf-name").value.trim() || (MeowI18n.getLang() === "en" ? "Player" : "بازیکن");
       u.bio = $("#pf-bio").value.trim();
       MeowStorage.setUser(u);
       toast(MeowI18n.t("saved"));
