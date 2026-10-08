@@ -1,9 +1,10 @@
-const CACHE = "meowbot-v2";
+const CACHE = "meowbot-v2-i18n";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/style.css",
   "./js/config.js",
+  "./js/i18n.js",
   "./js/storage.js",
   "./js/themes.js",
   "./js/achievements.js",
