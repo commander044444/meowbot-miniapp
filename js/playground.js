@@ -31,9 +31,16 @@
   let gameStartedAt = 0;
 
   const resultMessages = {
-    high: ["New personal best.", "That was clean.", "Strong run."],
-    mid: ["Solid.", "Keep going.", "Not bad."],
-    low: ["Warm-up done.", "Try again when ready.", "Practice helps."],
+    fa: {
+      high: ["رکورد شخصی جدید.", "تمیز بود.", "دور قوی‌ای بود."],
+      mid: ["خوب بود.", "ادامه بده.", "بد نبود."],
+      low: ["گرم شدی.", "هر وقت آماده بودی دوباره.", "تمرین کمک می‌کنه."],
+    },
+    en: {
+      high: ["New personal best.", "That was clean.", "Strong run."],
+      mid: ["Solid.", "Keep going.", "Not bad."],
+      low: ["Warm-up done.", "Try again when ready.", "Practice helps."],
+    },
   };
 
   function $(sel, root) {
@@ -258,12 +265,14 @@
     MeowDaily.reportGame(g.id, result);
     const unlocked = MeowAchievements.checkAfterGame(g, result, save);
     const score = result.score || 0;
+    const lang = (window.MeowI18n && MeowI18n.getLang()) || "fa";
+    const packs = resultMessages[lang] || resultMessages.fa;
     const pool =
       save.isNewRecord || score > 80
-        ? resultMessages.high
+        ? packs.high
         : score > 30
-          ? resultMessages.mid
-          : resultMessages.low;
+          ? packs.mid
+          : packs.low;
     const msg = pool[Math.floor(Math.random() * pool.length)];
     const assist = save.isNewRecord
       ? MeowAssistant.lineFor("record")
