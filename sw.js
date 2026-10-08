@@ -1,4 +1,4 @@
-const CACHE = "meowbot-v2-i18n";
+const CACHE = "meowbot-v2-i18n-3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -27,15 +27,12 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetched = fetch(e.request)
-        .then((res) => {
-          const clone = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, clone)).catch(() => {});
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fetched;
-    })
+    fetch(e.request)
+      .then((res) => {
+        const clone = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, clone)).catch(() => {});
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
