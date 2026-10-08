@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0d1a" />
+  <title>بازی‌ها · MeowBot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="app">
+    <h1 class="page-title">بازی‌ها</h1>
+    <div class="card" style="display:flex;justify-content:space-between">
+      <span style="color:var(--muted)">سکه</span>
+      <span class="price" data-coins>0</span>
+    </div>
+    <div class="game-grid">
+      <div class="game-card card">
+        <h3>🎲 حدس عدد</h3>
+        <p>عدد ۱ تا ۱۰ را حدس بزن و سکه بگیر.</p>
+        <button class="btn btn-primary btn-block" id="guess-start">شروع</button>
+        <div class="game-area" id="guess-area">برای شروع دکمه را بزن</div>
+      </div>
+      <div class="game-card card">
+        <h3>⚡ تست واکنش</h3>
+        <p>وقتی سبز شد سریع بزن — هرچه سریع‌تر، سکه بیشتر.</p>
+        <button class="react-btn" id="react-btn">شروع واکنش</button>
+      </div>
+    </div>
+    <p class="hint">امتیازها فعلاً محلی‌اند. بعداً با API پاداش واقعی ربات همگام می‌شوند.</p>
+  </div>
+  <nav class="bottom-nav">
+    <div class="inner">
+      <a class="nav-item" href="index.html"><span class="ni">🏠</span>خانه</a>
+      <a class="nav-item" href="profile.html"><span class="ni">👤</span>پروفایل</a>
+      <a class="nav-item" href="shop.html"><span class="ni">🛒</span>فروشگاه</a>
+      <a class="nav-item active" href="games.html"><span class="ni">🎮</span>بازی</a>
+      <a class="nav-item" href="leaderboard.html"><span class="ni">🏅</span>رنک</a>
+    </div>
+  </nav>
+  <script src="js/app.js"></script>
+</body>
+</html>
