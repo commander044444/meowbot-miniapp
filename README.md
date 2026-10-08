@@ -1,28 +1,19 @@
-# MeowBot Landing
+# MeowBot Mini App 2.0
 
-سایت معرفی رسمی **MeowBot** — بدون Login، مناسب WebView بله.
+Professional offline arcade + progression for MeowBot.
 
-## URL
+**URL:** https://commander044444.github.io/meowbot-miniapp/
 
-https://commander044444.github.io/meowbot-miniapp/
+## Features
 
-## ساختار
+- 42 playable games (preserved)
+- XP / Level / Achievements / Daily challenge
+- Local shop & themes
+- Profile, stats, search, PWA
+- Versioned localStorage (migrates v1 scores)
 
-```
-index.html
-css/style.css
-js/config.js   ← لینک‌ها
-js/app.js
-assets/
-```
+## Config
 
-## تنظیم لینک‌ها
+Edit `js/config.js` for bot / studio / developer links.
 
-در `js/config.js`:
-
-- `bot` → @empireeebot
-- `studio` → @darkknight_studio
-- `officialChannel` → @meownewsbot
-- `developerProfile` / `developerPv` / `developerMore`
-
-© 2026 MeowBot — All rights reserved.
+© 2026 MeowBot · All rights reserved.
