@@ -127,6 +127,8 @@
       not_enough: "سکه کافی نیست",
       owned: "از قبل داری",
       not_found: "پیدا نشد",
+      keep_exploring: "ادامه بده و کشف کن",
+      player: "بازیکن",
     },
     en: {
       nav_home: "Home",
@@ -242,6 +244,8 @@
       not_enough: "Not enough coins",
       owned: "Owned",
       not_found: "Not found",
+      keep_exploring: "Keep exploring",
+      player: "Player",
     },
   };
 
