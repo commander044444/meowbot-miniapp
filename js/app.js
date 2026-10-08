@@ -53,7 +53,7 @@
       renderProfile();
       profileOpens++;
       if (profileOpens >= 3) {
-        if (MeowStorage.unlockAchievement("triple_meow")) toast("Hidden achievement");
+        if (MeowStorage.unlockAchievement("triple_meow")) toast(MeowI18n.t("hidden_ach"));
       }
     }
     if (name === "home") refreshChrome();
@@ -79,13 +79,14 @@
     const ch = MeowDaily.getChallenge();
     const daily = $("#home-daily");
     if (daily) {
+      const tt = MeowI18n.t;
       daily.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div>
             <strong style="font-size:0.9rem">${ch.label}</strong>
-            <p class="muted" style="font-size:0.78rem;margin-top:4px">${ch.done ? "Completed for today" : "Resets at midnight"}</p>
+            <p class="muted" style="font-size:0.78rem;margin-top:4px">${ch.done ? tt("daily_done") : tt("daily_reset")}</p>
           </div>
-          ${!ch.done ? `<button type="button" class="btn btn-sm" data-open-playground data-game="${ch.game}">Play</button>` : ""}
+          ${!ch.done ? `<button type="button" class="btn btn-sm" data-open-playground data-game="${ch.game}">${tt("play")}</button>` : ""}
         </div>`;
       daily.querySelectorAll("[data-open-playground]").forEach((b) => {
         b.onclick = (e) => {
@@ -105,8 +106,8 @@
           <strong style="font-size:0.95rem">${g.name}</strong>
           <p class="muted" style="font-size:0.8rem;margin:4px 0 12px">${g.desc || ""}</p>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="muted" style="font-size:0.75rem">Best ${sc.bestTime != null ? sc.bestTime + " ms" : sc.best || "—"}</span>
-            <button type="button" class="btn btn-sm" data-play-feat="${g.id}">Play</button>
+            <span class="muted" style="font-size:0.75rem">${MeowI18n.t("best")} ${sc.bestTime != null ? sc.bestTime + " ms" : sc.best || "—"}</span>
+            <button type="button" class="btn btn-sm" data-play-feat="${g.id}">${MeowI18n.t("play")}</button>
           </div>`;
         feat.querySelector("[data-play-feat]").onclick = () => MeowPlayground.open({ game: g.id });
       }
@@ -117,14 +118,15 @@
     const p = MeowStorage.getProgress();
     const panel = $("#progress-panel");
     if (panel) {
+      const tt = MeowI18n.t;
       panel.innerHTML = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-variant-numeric:tabular-nums">
-          <div><span class="muted" style="font-size:0.72rem">Level</span><div style="font-size:1.2rem;font-weight:650">${p.level}</div></div>
-          <div><span class="muted" style="font-size:0.72rem">XP</span><div style="font-size:1.2rem;font-weight:650">${p.xp} / ${p.xpNeed}</div></div>
-          <div><span class="muted" style="font-size:0.72rem">Games</span><div style="font-weight:650">${p.totalGames || 0}</div></div>
-          <div><span class="muted" style="font-size:0.72rem">Best score</span><div style="font-weight:650">${p.bestScore || 0}</div></div>
-          <div><span class="muted" style="font-size:0.72rem">Play time</span><div style="font-weight:650">${Math.round((p.playTimeMs || 0) / 60000)} min</div></div>
-          <div><span class="muted" style="font-size:0.72rem">Reaction</span><div style="font-weight:650">${p.bestReaction != null ? p.bestReaction + " ms" : "—"}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("level")}</span><div style="font-size:1.2rem;font-weight:650">${p.level}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("xp")}</span><div style="font-size:1.2rem;font-weight:650">${p.xp} / ${p.xpNeed}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("games")}</span><div style="font-weight:650">${p.totalGames || 0}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("best_score")}</span><div style="font-weight:650">${p.bestScore || 0}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("play_time")}</span><div style="font-weight:650">${Math.round((p.playTimeMs || 0) / 60000)} ${tt("min")}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">${tt("reaction")}</span><div style="font-weight:650">${p.bestReaction != null ? p.bestReaction + " ms" : "—"}</div></div>
         </div>
         <div class="xp-line" style="margin-top:14px"><i style="width:${Math.min(100, Math.round((p.xp / Math.max(1, p.xpNeed)) * 100))}%"></i></div>`;
     }
@@ -150,10 +152,11 @@
           most = id;
         }
       });
+      const tt = MeowI18n.t;
       stats.innerHTML = `
-        <p style="font-size:0.9rem">Favorite: <strong>${fav ? fav.name : "—"}</strong></p>
-        <p style="font-size:0.9rem;margin-top:8px">Most played: <strong>${most && MeowGames.registry[most] ? MeowGames.registry[most].name : "—"}</strong> (${mostN})</p>
-        <p style="font-size:0.9rem;margin-top:8px">Total score sum: <strong>${p.totalScore || 0}</strong></p>`;
+        <p style="font-size:0.9rem">${tt("favorite")}: <strong>${fav ? fav.name : "—"}</strong></p>
+        <p style="font-size:0.9rem;margin-top:8px">${tt("most_played")}: <strong>${most && MeowGames.registry[most] ? MeowGames.registry[most].name : "—"}</strong> (${mostN})</p>
+        <p style="font-size:0.9rem;margin-top:8px">${tt("total_score")}: <strong>${p.totalScore || 0}</strong></p>`;
     }
   }
 
@@ -175,8 +178,8 @@
           </div>
           ${
             owned
-              ? `<button type="button" class="btn btn-sm" data-equip="${item.id}">${eq ? "Equipped" : "Equip"}</button>`
-              : `<button type="button" class="btn btn-sm btn-primary" data-buy="${item.id}">Buy</button>`
+              ? `<button type="button" class="btn btn-sm" data-equip="${item.id}">${eq ? MeowI18n.t("equipped") : MeowI18n.t("equip")}</button>`
+              : `<button type="button" class="btn btn-sm btn-primary" data-buy="${item.id}">${MeowI18n.t("buy")}</button>`
           }
         </div>`;
       })
@@ -184,14 +187,14 @@
     box.querySelectorAll("[data-buy]").forEach((b) => {
       b.onclick = () => {
         const r = MeowShop.buy(b.getAttribute("data-buy"));
-        toast(r.ok ? "Unlocked" : r.error || "Failed");
+        toast(r.ok ? MeowI18n.t("unlocked") : (r.error === "Not enough coins" ? MeowI18n.t("not_enough") : r.error === "Owned" ? MeowI18n.t("owned") : MeowI18n.t("failed")));
         renderShop();
       };
     });
     box.querySelectorAll("[data-equip]").forEach((b) => {
       b.onclick = () => {
         MeowShop.equip(b.getAttribute("data-equip"));
-        toast("Equipped");
+        toast(MeowI18n.t("equipped"));
         renderShop();
       };
     });
@@ -309,12 +312,20 @@
       }
     });
     $("#btn-search").onclick = () => showView("search");
+    const langBtn = $("#btn-lang");
+    if (langBtn) {
+      langBtn.onclick = () => {
+        const next = MeowI18n.getLang() === "fa" ? "en" : "fa";
+        MeowI18n.setLang(next);
+        onLangChange();
+      };
+    }
     $("#pf-save").onclick = () => {
       const u = MeowStorage.getUser();
       u.name = $("#pf-name").value.trim() || "Player";
       u.bio = $("#pf-bio").value.trim();
       MeowStorage.setUser(u);
-      toast("Saved");
+      toast(MeowI18n.t("saved"));
       renderProfile();
     };
     $("#world-daily").onclick = () => {
@@ -341,23 +352,46 @@
     if (secret.join("") === "meow") {
       if (MeowStorage.unlockAchievement("konami")) {
         MeowStorage.addXp(50);
-        toast("Secret sequence");
+        toast(MeowI18n.t("secret"));
       }
     }
   });
 
   function boot() {
     MeowThemes.init();
+    // language: always FA unless user chose EN
+    const lang = (MeowStorage.getSettings().lang === "en") ? "en" : "fa";
+    MeowI18n.setLang(lang);
+    updateLangBtn();
     applyConfig();
     setupNav();
     setupSearch();
     refreshChrome();
-    // hash route
     const h = (location.hash || "#home").replace("#", "");
     if (h && h !== "playground") showView(h);
   }
 
-  window.MeowApp = { showView, refreshChrome, toast };
+  function updateLangBtn() {
+    const b = $("#btn-lang");
+    if (!b) return;
+    const lang = MeowI18n.getLang();
+    b.textContent = lang === "fa" ? "EN" : "FA";
+    b.title = lang === "fa" ? "English" : "فارسی";
+  }
+
+  function onLangChange() {
+    updateLangBtn();
+    refreshChrome();
+    const active = document.querySelector(".view.active");
+    if (active) {
+      const name = active.getAttribute("data-view");
+      if (name === "progress") renderProgress();
+      if (name === "shop") renderShop();
+      if (name === "profile") renderProfile();
+    }
+  }
+
+  window.MeowApp = { showView, refreshChrome, toast, onLangChange };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
