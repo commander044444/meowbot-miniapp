@@ -834,3 +834,29 @@ ul { list-style: none; }
 }
 .reaction-stage.go { background: #166534; }
 .reaction-stage.early { background: #92400e; }
+
+.pg-basket {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.2rem;
+  z-index: 5;
+  transition: left .05s linear;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.4));
+  pointer-events: none;
+}
+.falling-field { cursor: crosshair; }
+.pg-fall {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 1.7rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.pg-ach-unlock.soft {
+  background: rgba(167,139,250,.1);
+  border-color: rgba(167,139,250,.3);
+}
