@@ -4,21 +4,23 @@
 (function (w) {
   "use strict";
 
+  function tt(k) { return (window.MeowI18n && MeowI18n.t(k)) || k; }
+
   const CATS = [
-    { id: "all", label: "All" },
-    { id: "popular", label: "Popular" },
-    { id: "speed", label: "Reaction" },
-    { id: "brain", label: "Memory" },
-    { id: "arcade", label: "Action" },
-    { id: "meow", label: "Meow" },
-    { id: "random", label: "Casual" },
+    { id: "all", labelKey: "cat_all" },
+    { id: "popular", labelKey: "cat_popular" },
+    { id: "speed", labelKey: "cat_speed" },
+    { id: "brain", labelKey: "cat_brain" },
+    { id: "arcade", labelKey: "cat_arcade" },
+    { id: "meow", labelKey: "cat_meow" },
+    { id: "random", labelKey: "cat_random" },
   ];
 
   const SORTS = [
-    { id: "popular", label: "Popular" },
-    { id: "name", label: "A–Z" },
-    { id: "best", label: "Best score" },
-    { id: "recent", label: "Recent" },
+    { id: "popular", labelKey: "sort_popular" },
+    { id: "name", labelKey: "sort_name" },
+    { id: "best", labelKey: "sort_best" },
+    { id: "recent", labelKey: "sort_recent" },
   ];
 
   let currentCat = "all";
@@ -77,7 +79,7 @@
   }
 
   function closePlayground() {
-    if (gameRunning && !confirm("Leave this game?")) return;
+    if (gameRunning && !confirm(tt("leave_game"))) return;
     gameRunning = false;
     activeGame = null;
     const overlay = $("#pg-overlay");
@@ -99,30 +101,30 @@
     view.innerHTML = `
       <header class="pg-top">
         <div>
-          <h1 class="pg-title">Playground</h1>
-          <p class="pg-sub">Choose a game</p>
+          <h1 class="pg-title">${tt("playground_title")}</h1>
+          <p class="pg-sub">${tt("choose_game")}</p>
         </div>
-        <button type="button" class="icon-btn" id="pg-close" aria-label="Close">×</button>
+        <button type="button" class="icon-btn" id="pg-close" aria-label="${tt("close")}">×</button>
       </header>
       <div class="pg-toolbar">
-        <input type="search" class="pg-search" id="pg-search" placeholder="Search games" value="${searchQ.replace(/"/g, "")}" />
-        <select id="pg-sort" class="pg-select" aria-label="Sort">
-          ${SORTS.map((s) => `<option value="${s.id}" ${s.id === currentSort ? "selected" : ""}>${s.label}</option>`).join("")}
+        <input type="search" class="pg-search" id="pg-search" placeholder="${tt("search_games")}" value="${searchQ.replace(/"/g, "")}" />
+        <select id="pg-sort" class="pg-select" aria-label="${tt("sort")}">
+          ${SORTS.map((s) => `<option value="${s.id}" ${s.id === currentSort ? "selected" : ""}>${tt(s.labelKey)}</option>`).join("")}
         </select>
       </div>
       <div class="pg-cats" id="pg-cats"></div>
       <section class="pg-daily-bar">
         <div>
-          <span class="label">Daily</span>
+          <span class="label">${tt("daily")}</span>
           <strong>${ch.label}</strong>
-          <span class="muted">${ch.done ? "Completed" : "In progress"}</span>
+          <span class="muted">${ch.done ? tt("completed") : tt("in_progress")}</span>
         </div>
-        ${!ch.done ? `<button type="button" class="btn btn-sm" id="pg-daily-play">Play</button>` : ""}
+        ${!ch.done ? `<button type="button" class="btn btn-sm" id="pg-daily-play">${tt("play")}</button>` : ""}
       </section>
       <div class="pg-meta-line">
-        <span>Lv ${p.level}</span>
-        <span>${p.totalGames || 0} plays</span>
-        <span>Best ${p.bestScore || 0}</span>
+        <span>${tt("level")} ${p.level}</span>
+        <span>${p.totalGames || 0} ${tt("plays")}</span>
+        <span>${tt("best")} ${p.bestScore || 0}</span>
       </div>
       <div class="pg-grid" id="pg-grid"></div>`;
     $("#pg-close").onclick = closePlayground;
@@ -145,7 +147,7 @@
     const box = $("#pg-cats");
     box.innerHTML = CATS.map(
       (c) =>
-        `<button type="button" class="chip ${c.id === currentCat ? "active" : ""}" data-cat="${c.id}">${c.label}</button>`
+        `<button type="button" class="chip ${c.id === currentCat ? "active" : ""}" data-cat="${c.id}">${tt(c.labelKey)}</button>`
     ).join("");
     box.querySelectorAll(".chip").forEach((b) => {
       b.onclick = () => {
@@ -161,7 +163,7 @@
     const list = filteredList();
     const scores = MeowStorage.getGames();
     if (!list.length) {
-      grid.innerHTML = '<p class="empty-state">No games match.</p>';
+      grid.innerHTML = '<p class="empty-state">' + tt("no_match") + '</p>';
       return;
     }
     grid.innerHTML = list
@@ -173,9 +175,9 @@
           <div class="game-card-main">
             <h3>${g.name}</h3>
             <p>${g.desc || ""}</p>
-            <span class="best">Best ${best}</span>
+            <span class="best">${tt("best")} ${best}</span>
           </div>
-          <button type="button" class="btn btn-sm" data-play="${g.id}">Play</button>
+          <button type="button" class="btn btn-sm" data-play="${g.id}">${tt("play")}</button>
         </article>`;
       })
       .join("");
@@ -199,19 +201,19 @@
     view.innerHTML = `
       <div class="pg-game">
         <header class="pg-game-bar">
-          <button type="button" class="icon-btn" id="pg-back" aria-label="Back">←</button>
+          <button type="button" class="icon-btn" id="pg-back" aria-label="${tt("back")}">←</button>
           <div class="pg-game-title">${g.name}</div>
-          <button type="button" class="icon-btn" id="pg-close2" aria-label="Close">×</button>
+          <button type="button" class="icon-btn" id="pg-close2" aria-label="${tt("close")}">×</button>
         </header>
         <div class="pg-start" id="pg-start">
           <p class="pg-sub">${g.desc || ""}</p>
-          <p class="muted">${isNew ? MeowAssistant.lineFor("newGame") : "Best: " + ((scores[id] || {}).best || 0)}</p>
-          <button type="button" class="btn btn-primary" id="pg-go">Start</button>
+          <p class="muted">${isNew ? MeowAssistant.lineFor("newGame") : tt("best") + ": " + ((scores[id] || {}).best || 0)}</p>
+          <button type="button" class="btn btn-primary" id="pg-go">${tt("start")}</button>
         </div>
         <div class="pg-game-root" id="pg-game-root" hidden></div>
       </div>`;
     $("#pg-back").onclick = () => {
-      if (gameRunning && !$("#pg-start") && !confirm("Leave this game?")) return;
+      if (gameRunning && !$("#pg-start") && !confirm(tt("leave_game"))) return;
       showHub();
     };
     $("#pg-close2").onclick = closePlayground;
@@ -238,7 +240,7 @@
         g.play(root, api);
       } catch (e) {
         console.error(e);
-        api.toast("Game error");
+        api.toast(tt("game_error"));
         showHub();
       }
     };
@@ -273,13 +275,13 @@
     view.innerHTML = `
       <div class="pg-result">
         <p class="assist-line">${assist}</p>
-        ${save.isNewRecord ? '<p class="record-flag">New record</p>' : ""}
-        <h2>Result</h2>
+        ${save.isNewRecord ? '<p class="record-flag">' + tt("new_record") + '</p>' : ""}
+        <h2>${tt("result")}</h2>
         <div class="result-grid">
-          <div><span>Score</span><strong>${score}</strong></div>
-          <div><span>Best</span><strong>${save.best}</strong></div>
-          <div><span>XP</span><strong>+${save.xpGain || 0}</strong></div>
-          ${result.bestTime != null ? `<div><span>Time</span><strong>${result.bestTime} ms</strong></div>` : ""}
+          <div><span>${tt("score")}</span><strong>${score}</strong></div>
+          <div><span>${tt("best")}</span><strong>${save.best}</strong></div>
+          <div><span>${tt("xp")}</span><strong>+${save.xpGain || 0}</strong></div>
+          ${result.bestTime != null ? `<div><span>${tt("reaction")}</span><strong>${result.bestTime} ms</strong></div>` : ""}
         </div>
         ${
           unlocked.length
@@ -289,8 +291,8 @@
             : ""
         }
         <div class="result-actions">
-          <button type="button" class="btn btn-primary" id="pg-again">Replay</button>
-          <button type="button" class="btn" id="pg-more">All games</button>
+          <button type="button" class="btn btn-primary" id="pg-again">${tt("replay")}</button>
+          <button type="button" class="btn" id="pg-more">${tt("all_games_btn")}</button>
         </div>
       </div>`;
     $("#pg-again").onclick = () => startGame(g.id);
