@@ -1,239 +1,364 @@
 /**
- * MeowBot Landing — interactions
- * Scroll reveal · nav · progress · no auth / no Bale user APIs
+ * MeowBot 2.0 shell — navigation, chrome, easter eggs
  */
 (function () {
   "use strict";
 
   const cfg = window.MEOW_CONFIG || {};
-  const links = cfg.links || {};
+  let profileOpens = 0;
 
-  /* ---------- Apply config links ---------- */
-  function href(key, fallback) {
-    const v = links[key];
-    if (v == null || v === "") return fallback || "#";
-    return v;
+  function $(s, r) {
+    return (r || document).querySelector(s);
+  }
+  function $$(s, r) {
+    return Array.from((r || document).querySelectorAll(s));
   }
 
-  function applyLinks() {
-    document.querySelectorAll("[data-link]").forEach((el) => {
+  function applyConfig() {
+    const b = cfg.brand || {};
+    const d = cfg.developer || {};
+    const st = cfg.studio || {};
+    const links = cfg.links || {};
+    $$("[data-brand-desc]").forEach((el) => {
+      if (b.shortDescription) el.textContent = b.shortDescription;
+    });
+    $$("[data-dev-name]").forEach((el) => (el.textContent = d.name || "COMMANDER04"));
+    $$("[data-dev-user]").forEach((el) => (el.textContent = d.username || ""));
+    $$("[data-dev-bio]").forEach((el) => (el.textContent = d.bio || ""));
+    $$("[data-studio-name]").forEach((el) => (el.textContent = st.name || ""));
+    $$("[data-studio-desc]").forEach((el) => (el.textContent = st.description || ""));
+    $$("[data-link]").forEach((el) => {
       const key = el.getAttribute("data-link");
-      const url = href(key);
-      if (url === "#" || !url) {
-        el.setAttribute("href", "#");
-        el.addEventListener("click", (e) => {
-          e.preventDefault();
-          toast("لینک هنوز در config.js تنظیم نشده");
-        });
-      } else {
+      const url = links[key];
+      if (url) {
         el.setAttribute("href", url);
         el.setAttribute("target", "_blank");
         el.setAttribute("rel", "noopener noreferrer");
+      } else {
+        el.addEventListener("click", (e) => e.preventDefault());
       }
     });
+    const gc = $("[data-game-count]");
+    if (gc && window.MeowGames) gc.textContent = String(MeowGames.catalog.length);
+  }
 
-    // Social cards from config
-    const grid = document.getElementById("social-grid");
-    if (grid && Array.isArray(cfg.social)) {
-      grid.innerHTML = cfg.social
-        .filter((s) => links[s.key])
-        .map(
-          (s) => `
-        <a class="link-card glass reveal" data-link="${s.key}" href="#">
-          <div class="ico">${s.icon || "🔗"}</div>
+  function showView(name) {
+    $$(".view").forEach((v) => v.classList.toggle("active", v.getAttribute("data-view") === name));
+    $$("[data-nav]").forEach((el) => {
+      el.classList.toggle("active", el.getAttribute("data-nav") === name);
+    });
+    if (name === "progress") renderProgress();
+    if (name === "shop") renderShop();
+    if (name === "profile") {
+      renderProfile();
+      profileOpens++;
+      if (profileOpens >= 3) {
+        if (MeowStorage.unlockAchievement("triple_meow")) toast("Hidden achievement");
+      }
+    }
+    if (name === "home") refreshChrome();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function refreshChrome() {
+    const p = MeowStorage.getProgress();
+    const ach = MeowStorage.getAchievements();
+    $$("[data-stat-games]").forEach((el) => (el.textContent = String(p.totalGames || 0)));
+    $$("[data-stat-level]").forEach((el) => (el.textContent = String(p.level || 1)));
+    $$("[data-stat-xp]").forEach((el) => (el.textContent = String(p.xp || 0)));
+    $$("[data-stat-ach]").forEach((el) => (el.textContent = String(Object.keys(ach).length)));
+    const pct = Math.min(100, Math.round(((p.xp || 0) / Math.max(1, p.xpNeed || 100)) * 100));
+    $$("[data-xp-bar]").forEach((el) => {
+      requestAnimationFrame(() => (el.style.width = pct + "%"));
+    });
+    $$("[data-currency]").forEach((el) => (el.textContent = String(MeowStorage.getShop().currency || 0)));
+
+    const assist = $("#home-assist");
+    if (assist) assist.textContent = MeowAssistant.lineFor("idle");
+
+    const ch = MeowDaily.getChallenge();
+    const daily = $("#home-daily");
+    if (daily) {
+      daily.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div>
-            <div class="t">${s.label}</div>
-            <div class="d">${s.desc || ""}</div>
+            <strong style="font-size:0.9rem">${ch.label}</strong>
+            <p class="muted" style="font-size:0.78rem;margin-top:4px">${ch.done ? "Completed for today" : "Resets at midnight"}</p>
           </div>
-          <span class="arrow">←</span>
-        </a>`
+          ${!ch.done ? `<button type="button" class="btn btn-sm" data-open-playground data-game="${ch.game}">Play</button>` : ""}
+        </div>`;
+      daily.querySelectorAll("[data-open-playground]").forEach((b) => {
+        b.onclick = (e) => {
+          e.preventDefault();
+          MeowPlayground.open({ game: ch.game });
+        };
+      });
+    }
+
+    const feat = $("#home-featured");
+    if (feat && window.MeowGames) {
+      const popular = MeowGames.catalog.filter((g) => g.popular);
+      const g = popular[Math.floor(Math.random() * Math.max(1, popular.length))] || MeowGames.catalog[0];
+      if (g) {
+        const sc = MeowStorage.getGameScore(g.id);
+        feat.innerHTML = `
+          <strong style="font-size:0.95rem">${g.name}</strong>
+          <p class="muted" style="font-size:0.8rem;margin:4px 0 12px">${g.desc || ""}</p>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="muted" style="font-size:0.75rem">Best ${sc.bestTime != null ? sc.bestTime + " ms" : sc.best || "—"}</span>
+            <button type="button" class="btn btn-sm" data-play-feat="${g.id}">Play</button>
+          </div>`;
+        feat.querySelector("[data-play-feat]").onclick = () => MeowPlayground.open({ game: g.id });
+      }
+    }
+  }
+
+  function renderProgress() {
+    const p = MeowStorage.getProgress();
+    const panel = $("#progress-panel");
+    if (panel) {
+      panel.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-variant-numeric:tabular-nums">
+          <div><span class="muted" style="font-size:0.72rem">Level</span><div style="font-size:1.2rem;font-weight:650">${p.level}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">XP</span><div style="font-size:1.2rem;font-weight:650">${p.xp} / ${p.xpNeed}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">Games</span><div style="font-weight:650">${p.totalGames || 0}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">Best score</span><div style="font-weight:650">${p.bestScore || 0}</div></div>
+          <div><span class="muted" style="font-size:0.72rem">Play time</span><div style="font-weight:650">${Math.round((p.playTimeMs || 0) / 60000)} min</div></div>
+          <div><span class="muted" style="font-size:0.72rem">Reaction</span><div style="font-weight:650">${p.bestReaction != null ? p.bestReaction + " ms" : "—"}</div></div>
+        </div>
+        <div class="xp-line" style="margin-top:14px"><i style="width:${Math.min(100, Math.round((p.xp / Math.max(1, p.xpNeed)) * 100))}%"></i></div>`;
+    }
+    const ach = MeowStorage.getAchievements();
+    const grid = $("#ach-grid");
+    if (grid) {
+      grid.innerHTML = MeowAchievements.DEFS.map((d) => {
+        const on = !!ach[d.id];
+        return `<div class="ach-item ${on ? "on" : ""} ${d.hidden && !on ? "hidden-ach" : ""}">
+          <strong>${d.hidden && !on ? "Hidden" : d.title}</strong>
+          <span>${d.hidden && !on ? "Keep exploring" : d.desc}</span>
+        </div>`;
+      }).join("");
+    }
+    const fav = p.favoriteGame && MeowGames.registry[p.favoriteGame];
+    const stats = $("#stats-panel");
+    if (stats) {
+      const scores = MeowStorage.getGames();
+      let most = null, mostN = 0;
+      Object.keys(scores).forEach((id) => {
+        if ((scores[id].plays || 0) > mostN) {
+          mostN = scores[id].plays;
+          most = id;
+        }
+      });
+      stats.innerHTML = `
+        <p style="font-size:0.9rem">Favorite: <strong>${fav ? fav.name : "—"}</strong></p>
+        <p style="font-size:0.9rem;margin-top:8px">Most played: <strong>${most && MeowGames.registry[most] ? MeowGames.registry[most].name : "—"}</strong> (${mostN})</p>
+        <p style="font-size:0.9rem;margin-top:8px">Total score sum: <strong>${p.totalScore || 0}</strong></p>`;
+    }
+  }
+
+  function renderShop() {
+    refreshChrome();
+    const shop = MeowStorage.getShop();
+    const box = $("#shop-list");
+    if (!box) return;
+    box.innerHTML = MeowShop.list()
+      .map((item) => {
+        const owned = (shop.owned || []).includes(item.id);
+        const eq =
+          shop.equipped &&
+          (shop.equipped.theme === item.id || shop.equipped.frame === item.id || shop.equipped.badge === item.id);
+        return `<div class="shop-item">
+          <div class="info">
+            <strong>${item.name}</strong>
+            <span>${item.desc} · ${item.price === 0 ? "Free" : item.price + " coins"}</span>
+          </div>
+          ${
+            owned
+              ? `<button type="button" class="btn btn-sm" data-equip="${item.id}">${eq ? "Equipped" : "Equip"}</button>`
+              : `<button type="button" class="btn btn-sm btn-primary" data-buy="${item.id}">Buy</button>`
+          }
+        </div>`;
+      })
+      .join("");
+    box.querySelectorAll("[data-buy]").forEach((b) => {
+      b.onclick = () => {
+        const r = MeowShop.buy(b.getAttribute("data-buy"));
+        toast(r.ok ? "Unlocked" : r.error || "Failed");
+        renderShop();
+      };
+    });
+    box.querySelectorAll("[data-equip]").forEach((b) => {
+      b.onclick = () => {
+        MeowShop.equip(b.getAttribute("data-equip"));
+        toast("Equipped");
+        renderShop();
+      };
+    });
+  }
+
+  function renderProfile() {
+    const u = MeowStorage.getUser();
+    const shop = MeowStorage.getShop();
+    const p = MeowStorage.getProgress();
+    const head = $("#profile-head");
+    if (head) {
+      const framed = shop.equipped && shop.equipped.frame;
+      head.innerHTML = `
+        <div class="avatar-lg ${framed ? "framed" : ""}">${(u.name || "P").charAt(0).toUpperCase()}</div>
+        <div>
+          <strong>${u.name || "Player"}</strong>
+          <p class="muted" style="font-size:0.8rem">Level ${p.level}</p>
+        </div>`;
+    }
+    $("#pf-name").value = u.name || "";
+    $("#pf-bio").value = u.bio || "";
+    const chips = $("#theme-chips");
+    if (chips) {
+      const themes = Object.keys(MeowThemes.THEMES);
+      const cur = MeowStorage.getSettings().theme || "midnight";
+      chips.innerHTML = themes
+        .map(
+          (t) =>
+            `<button type="button" class="chip ${t === cur ? "active" : ""}" data-theme="${t}">${t}</button>`
         )
         .join("");
-      // re-bind
-      grid.querySelectorAll("[data-link]").forEach((el) => {
-        const key = el.getAttribute("data-link");
-        const url = href(key);
-        if (url && url !== "#") {
-          el.setAttribute("href", url);
-          el.setAttribute("target", "_blank");
-          el.setAttribute("rel", "noopener noreferrer");
-        }
-      });
-    }
-
-    // Developer / studio text
-    const d = cfg.developer || {};
-    const st = cfg.studio || {};
-    setText("[data-dev-name]", d.name);
-    setText("[data-dev-user]", d.username);
-    setText("[data-dev-bio]", d.bio);
-    setText("[data-studio-name]", st.name);
-    setText("[data-studio-tag]", st.tagline);
-    setText("[data-studio-desc]", st.description);
-    setText("[data-brand-name]", (cfg.brand && cfg.brand.name) || "MeowBot");
-    setText("[data-brand-tag]", (cfg.brand && cfg.brand.tagline) || "");
-    setText("[data-brand-desc]", (cfg.brand && cfg.brand.shortDescription) || "");
-
-    if (d.avatar) {
-      const av = document.querySelector(".dev-avatar");
-      if (av) av.innerHTML = `<img src="${d.avatar}" alt="" />`;
-    }
-    if (st.avatar) {
-      const av = document.querySelector(".studio-logo");
-      if (av) av.innerHTML = `<img src="${st.avatar}" alt="" />`;
-    }
-  }
-
-  function setText(sel, val) {
-    if (!val) return;
-    document.querySelectorAll(sel).forEach((el) => {
-      el.textContent = val;
-    });
-  }
-
-  /* ---------- Toast ---------- */
-  function toast(msg) {
-    let t = document.getElementById("toast");
-    if (!t) {
-      t = document.createElement("div");
-      t.id = "toast";
-      t.style.cssText =
-        "position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:250;padding:12px 18px;border-radius:14px;background:rgba(20,20,40,.95);border:1px solid rgba(167,139,250,.35);font-size:.85rem;font-weight:600;opacity:0;transition:.3s;max-width:90%;text-align:center;pointer-events:none";
-      document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    requestAnimationFrame(() => {
-      t.style.opacity = "1";
-      t.style.transform = "translateX(-50%) translateY(0)";
-    });
-    clearTimeout(t._t);
-    t._t = setTimeout(() => {
-      t.style.opacity = "0";
-      t.style.transform = "translateX(-50%) translateY(-20px)";
-    }, 2600);
-  }
-
-  /* ---------- Scroll progress ---------- */
-  function onScrollProgress() {
-    const h = document.documentElement;
-    const max = h.scrollHeight - h.clientHeight;
-    const p = max > 0 ? (h.scrollTop / max) * 100 : 0;
-    const bar = document.getElementById("scroll-progress");
-    if (bar) bar.style.width = p + "%";
-  }
-
-  /* ---------- Nav ---------- */
-  function setupNav() {
-    const nav = document.getElementById("nav");
-    const toggle = document.getElementById("nav-toggle");
-    const drawer = document.getElementById("nav-drawer");
-
-    function setScrolled() {
-      if (!nav) return;
-      nav.classList.toggle("scrolled", window.scrollY > 24);
-    }
-    setScrolled();
-    window.addEventListener("scroll", setScrolled, { passive: true });
-
-    if (toggle) {
-      toggle.addEventListener("click", () => {
-        nav.classList.toggle("open");
-      });
-    }
-
-    document.querySelectorAll(".nav-drawer a, .nav-links a").forEach((a) => {
-      a.addEventListener("click", () => nav.classList.remove("open"));
-    });
-
-    // Active section
-    const sections = document.querySelectorAll("section[id]");
-    const navAs = document.querySelectorAll(".nav-links a[href^='#'], .nav-drawer a[href^='#']");
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((en) => {
-          if (!en.isIntersecting) return;
-          const id = en.target.id;
-          navAs.forEach((a) => {
-            a.classList.toggle("active", a.getAttribute("href") === "#" + id);
-          });
-        });
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => io.observe(s));
-  }
-
-  /* ---------- Reveal ---------- */
-  function setupReveal() {
-    const nodes = document.querySelectorAll(".reveal");
-    if (!nodes.length) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      nodes.forEach((n) => n.classList.add("in"));
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((en) => {
-          if (en.isIntersecting) {
-            en.target.classList.add("in");
+      chips.querySelectorAll("[data-theme]").forEach((b) => {
+        b.onclick = () => {
+          const t = b.getAttribute("data-theme");
+          const s = MeowStorage.getSettings();
+          s.theme = t;
+          MeowStorage.setSettings(s);
+          MeowThemes.apply(t);
+          const shop = MeowStorage.getShop();
+          shop.equipped = shop.equipped || {};
+          shop.equipped.theme = "theme_" + t;
+          if (!(shop.owned || []).includes("theme_" + t)) {
+            shop.owned = shop.owned || [];
+            shop.owned.push("theme_" + t);
           }
-          // keep class when leaving — natural, no flash
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
-    );
-
-    nodes.forEach((n, i) => {
-      if (!n.style.getPropertyValue("--d")) {
-        const stagger = n.dataset.stagger;
-        if (stagger != null) n.style.setProperty("--d", Number(stagger) * 70 + "ms");
-        else if (n.parentElement && n.parentElement.classList.contains("grid-3")) {
-          // handled via data-stagger in HTML ideally
-        }
-      }
-      io.observe(n);
-    });
+          MeowStorage.setShop(shop);
+          renderProfile();
+        };
+      });
+    }
   }
 
-  /* ---------- Back to top ---------- */
-  function setupToTop() {
-    const btn = document.getElementById("to-top");
-    if (!btn) return;
+  function toast(msg) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2200);
+  }
+
+  function setupSearch() {
+    const input = $("#global-search");
+    const out = $("#search-results");
+    if (!input || !out) return;
+    input.oninput = () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) {
+        out.innerHTML = "";
+        return;
+      }
+      const rows = [];
+      (MeowGames.catalog || []).forEach((g) => {
+        if (g.name.toLowerCase().includes(q) || (g.desc || "").toLowerCase().includes(q)) {
+          rows.push({ type: "game", id: g.id, title: g.name, sub: g.desc });
+        }
+      });
+      MeowAchievements.DEFS.forEach((a) => {
+        if (!a.hidden && (a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q))) {
+          rows.push({ type: "ach", title: a.title, sub: a.desc });
+        }
+      });
+      ["home", "progress", "shop", "profile", "about", "world"].forEach((s) => {
+        if (s.includes(q)) rows.push({ type: "nav", id: s, title: s, sub: "Section" });
+      });
+      out.innerHTML = rows
+        .slice(0, 20)
+        .map((r) => {
+          if (r.type === "game")
+            return `<button type="button" class="list-row" data-sg="${r.id}"><div class="meta"><strong>${r.title}</strong><span>${r.sub || ""}</span></div></button>`;
+          if (r.type === "nav")
+            return `<button type="button" class="list-row" data-sn="${r.id}"><div class="meta"><strong>${r.title}</strong><span>Section</span></div></button>`;
+          return `<div class="list-row"><div class="meta"><strong>${r.title}</strong><span>${r.sub}</span></div></div>`;
+        })
+        .join("");
+      out.querySelectorAll("[data-sg]").forEach((b) => {
+        b.onclick = () => MeowPlayground.open({ game: b.getAttribute("data-sg") });
+      });
+      out.querySelectorAll("[data-sn]").forEach((b) => {
+        b.onclick = () => showView(b.getAttribute("data-sn"));
+      });
+    };
+  }
+
+  function setupNav() {
+    document.body.addEventListener("click", (e) => {
+      const nav = e.target.closest("[data-nav]");
+      if (nav && nav.getAttribute("data-nav")) {
+        e.preventDefault();
+        const v = nav.getAttribute("data-nav");
+        if (v === "playground") {
+          MeowPlayground.open();
+          return;
+        }
+        showView(v);
+      }
+    });
+    $("#btn-search").onclick = () => showView("search");
+    $("#pf-save").onclick = () => {
+      const u = MeowStorage.getUser();
+      u.name = $("#pf-name").value.trim() || "Player";
+      u.bio = $("#pf-bio").value.trim();
+      MeowStorage.setUser(u);
+      toast("Saved");
+      renderProfile();
+    };
+    $("#world-daily").onclick = () => {
+      const ch = MeowDaily.getChallenge();
+      MeowPlayground.open({ game: ch.game });
+    };
+    const top = $("#to-top");
     window.addEventListener(
       "scroll",
       () => {
-        btn.classList.toggle("show", window.scrollY > 480);
+        $("#topbar").classList.toggle("scrolled", window.scrollY > 8);
+        top.classList.toggle("show", window.scrollY > 400);
       },
       { passive: true }
     );
-    btn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    top.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  /* ---------- Loader ---------- */
-  function hideLoader() {
-    const l = document.getElementById("loader");
-    if (!l) return;
-    requestAnimationFrame(() => l.classList.add("hide"));
-  }
+  // Konami-like: M-E-O-W
+  const secret = [];
+  window.addEventListener("keydown", (e) => {
+    secret.push(e.key.toLowerCase());
+    if (secret.length > 4) secret.shift();
+    if (secret.join("") === "meow") {
+      if (MeowStorage.unlockAchievement("konami")) {
+        MeowStorage.addXp(50);
+        toast("Secret sequence");
+      }
+    }
+  });
 
-  /* ---------- Boot ---------- */
   function boot() {
-    applyLinks();
+    MeowThemes.init();
+    applyConfig();
     setupNav();
-    setupReveal();
-    setupToTop();
-    window.addEventListener("scroll", onScrollProgress, { passive: true });
-    onScrollProgress();
-    hideLoader();
+    setupSearch();
+    refreshChrome();
+    // hash route
+    const h = (location.hash || "#home").replace("#", "");
+    if (h && h !== "playground") showView(h);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
+  window.MeowApp = { showView, refreshChrome, toast };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();
