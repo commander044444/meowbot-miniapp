@@ -64,7 +64,7 @@
     return { currency: 0, owned: ["theme_midnight"], equipped: { theme: "theme_midnight", frame: null, badge: null } };
   }
   function defaultSettings() {
-    return { muted: true, reducedMotion: false, theme: "midnight" };
+    return { muted: true, reducedMotion: false, theme: "midnight", lang: "fa" };
   }
 
   function migrate() {
