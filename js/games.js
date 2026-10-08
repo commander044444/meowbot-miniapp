@@ -213,57 +213,87 @@
     },
   };
 
-  /* ===== 6 Falling Objects ===== */
+  /* ===== 6 Falling Objects — سبد زیر سیب ===== */
   G.falling = {
-    id: "falling", name: "Falling Objects", cat: "speed", icon: "🍎",
-    desc: "فقط 🍎 را بگیر — بمب را نه!",
+    id: "falling", name: "Catch Apples", cat: "speed", icon: "🍎",
+    desc: "سبد را حرکت بده و سیب‌ها را بگیر",
+    popular: true,
     play(root, api) {
       clear(root);
-      let score = 0, lives = 3, active = true;
+      let score = 0, lives = 3, active = true, basketX = 50;
       const h = hud("امتیاز: 0 | ❤️ 3");
-      const stage = el('<div class="pg-stage pg-field falling-field"></div>');
+      const stage = el('<div class="pg-stage pg-field falling-field"><div class="pg-basket">🧺</div></div>');
       root.append(h, stage);
+      const basket = stage.querySelector(".pg-basket");
+      function setBasket(pct) {
+        basketX = Math.max(8, Math.min(92, pct));
+        basket.style.left = basketX + "%";
+      }
+      setBasket(50);
+      function moveFromEvent(clientX) {
+        const r = stage.getBoundingClientRect();
+        setBasket(((clientX - r.left) / r.width) * 100);
+      }
+      stage.addEventListener("mousemove", (e) => moveFromEvent(e.clientX));
+      stage.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        moveFromEvent(e.touches[0].clientX);
+      }, { passive: false });
+      stage.addEventListener("click", (e) => moveFromEvent(e.clientX));
+
       const iv = setInterval(() => {
         if (!active) return;
-        const isBomb = Math.random() < 0.28;
-        const o = document.createElement("button");
-        o.type = "button";
+        const isBomb = Math.random() < 0.25;
+        const o = document.createElement("div");
         o.className = "pg-fall";
         o.textContent = isBomb ? "💣" : "🍎";
-        o.style.left = 8 + Math.random() * 80 + "%";
+        const ox = 10 + Math.random() * 80;
+        o.style.left = ox + "%";
         stage.appendChild(o);
-        let y = -10;
+        let y = -8;
         const fall = setInterval(() => {
-          y += 2.2;
-          o.style.top = y + "%";
-          if (y > 100) {
+          if (!active) {
             clearInterval(fall);
             o.remove();
-            if (!isBomb && active) {
+            return;
+          }
+          y += 2.0 + score * 0.01;
+          o.style.top = y + "%";
+          // catch zone near basket
+          if (y >= 78 && y <= 92) {
+            if (Math.abs(ox - basketX) < 14) {
+              clearInterval(fall);
+              o.remove();
+              if (isBomb) {
+                lives--;
+                h.textContent = `امتیاز: ${score} | ❤️ ${lives}`;
+                if (lives <= 0) {
+                  active = false;
+                  clearInterval(iv);
+                  api.end({ score, label: "سبد ترکید 💥" });
+                }
+              } else {
+                score += 10;
+                h.textContent = `امتیاز: ${score} | ❤️ ${lives}`;
+              }
+              return;
+            }
+          }
+          if (y > 105) {
+            clearInterval(fall);
+            o.remove();
+            if (!isBomb) {
               lives--;
               h.textContent = `امتیاز: ${score} | ❤️ ${lives}`;
               if (lives <= 0) {
                 active = false;
                 clearInterval(iv);
-                api.end({ score });
+                api.end({ score, label: "سیب‌ها از دست رفت 🍎" });
               }
             }
           }
-        }, 30);
-        o.addEventListener("click", () => {
-          clearInterval(fall);
-          o.remove();
-          if (isBomb) {
-            lives--;
-            if (lives <= 0) {
-              active = false;
-              clearInterval(iv);
-              api.end({ score });
-            }
-          } else score += 10;
-          h.textContent = `امتیاز: ${score} | ❤️ ${lives}`;
-        });
-      }, 700);
+        }, 28);
+      }, 650);
     },
   };
 
@@ -1018,7 +1048,7 @@
   /* ===== 28 Meow Catch ===== */
   G.meow_catch = {
     id: "meow_catch", name: "Meow Catch", cat: "meow", icon: "✨",
-    desc: "فقط ستاره و ماهی — نه بمب",
+    desc: "با سبد، سیب و ماهی را بگیر",
     play(root, api) {
       G.falling.play(root, api);
     },
