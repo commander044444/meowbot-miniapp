@@ -29,10 +29,36 @@
   let gameRunning = false;
 
   const resultMessages = {
-    high: ["اوووه رکورد زدی! 🔥", "پیشی بهت افتخار می‌کنه 😼", "این یکی عالی بود!"],
-    mid: ["بد نبود! 👀", "دوباره؟ این بار بهتر می‌تونی!", "داری راه می‌افتی 🐱"],
-    low: ["اشکال نداره، تمرین کن 😼", "حوصله‌ت هنوز سر نرفته؟", "یه بار دیگه امتحان کن!"],
+    high: [
+      "اوووه رکورد زدی! 🔥",
+      "پیشی بهت افتخار می‌کنه 😼",
+      "این یکی عالی بود!",
+      "داری می‌ترکونی! ⚡",
+      "رکورد جدید؟ جدی؟ 🏆",
+    ],
+    mid: [
+      "بد نبود! 👀",
+      "دوباره؟ این بار بهتر می‌تونی!",
+      "داری راه می‌افتی 🐱",
+      "خوب بود، هنوز جا برای بهتر شدن هست",
+      "میو! ادامه بده 🎮",
+    ],
+    low: [
+      "اشکال نداره، تمرین کن 😼",
+      "حوصله‌ت هنوز سر نرفته؟",
+      "یه بار دیگه امتحان کن!",
+      "اولین قدم‌ها همیشه سختن 💫",
+      "پیشی هنوز بهت ایمان داره 🐱",
+    ],
   };
+
+  const alwaysTips = [
+    "هر بازی یک قدم نزدیک‌تر به دستاورد بعدی 🌟",
+    "رکوردها فقط روی همین دستگاه ذخیره می‌شن",
+    "دسته‌های مختلف را امتحان کن — Explorer در انتظارته",
+    "واکنش زیر ۲۵۰ms = Speed Demon ⚡",
+    "۵۰ بازی = لقب Addicted 🔥",
+  ];
 
   function $(sel, root) {
     return (root || document).querySelector(sel);
@@ -211,6 +237,14 @@
           ? resultMessages.mid
           : resultMessages.low;
     const msg = pool[Math.floor(Math.random() * pool.length)];
+    const tip = alwaysTips[Math.floor(Math.random() * alwaysTips.length)];
+
+    // اگر دستاورد جدیدی نبود، یک «ستاره بازی» نمایشی بده
+    const starLine = unlocked.length
+      ? unlocked
+          .map((a) => `<div class="pg-ach-unlock">${a.title}<small>${a.desc}</small></div>`)
+          .join("")
+      : `<div class="pg-ach-unlock soft">✨ بازی تموم شد!<small>${tip}</small></div>`;
 
     const view = $("#pg-view");
     view.innerHTML = `
@@ -224,13 +258,7 @@
           ${result.bestTime != null ? `<div><span>Time</span><strong>${result.bestTime}ms</strong></div>` : ""}
           ${result.label ? `<div><span>نتیجه</span><strong>${result.label}</strong></div>` : ""}
         </div>
-        ${
-          unlocked.length
-            ? `<div class="pg-unlocks">${unlocked
-                .map((a) => `<div class="pg-ach-unlock">${a.title}<small>${a.desc}</small></div>`)
-                .join("")}</div>`
-            : ""
-        }
+        <div class="pg-unlocks">${starLine}</div>
         <div class="pg-result-actions">
           <button type="button" class="pg-btn pg-btn-primary" id="pg-again">🔄 Play Again</button>
           <button type="button" class="pg-btn" id="pg-more">🎮 More Games</button>
