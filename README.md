@@ -1,49 +1,39 @@
-# MeowBot Mini App
+# MeowBot Landing (Mini App)
 
-Mini App استاتیک برای **بله** — طراحی Cute · Modern · Dark · Premium
+سایت معرفی Premium برای **MeowBot** — بدون Login، بدون Backend، مناسب GitHub Pages و WebView بله.
 
-## GitHub Pages
+## URL
 
-پس از فعال‌سازی Pages:
-
-**https://commander044444.github.io/meowbot-miniapp/**
-
-### فعال‌سازی
-
-1. Repository → **Settings** → **Pages**
-2. Source: **Deploy from a branch**
-3. Branch: **main**
-4. Folder: **/ (root)**
-5. Save
+https://commander044444.github.io/meowbot-miniapp/
 
 ## ساختار
 
 ```
 meowbot-miniapp/
 ├── index.html
-├── profile.html
-├── shop.html
-├── games.html
-├── leaderboard.html
 ├── css/style.css
+├── js/config.js      ← لینک‌ها را اینجا عوض کن
 ├── js/app.js
 ├── assets/
 └── README.md
 ```
 
-## Bale
+## تنظیم لینک‌ها
 
-- `Bale.WebApp` / `Telegram.WebApp` ready
-- نام کاربر از `initDataUnsafe.user` فقط برای نمایش
-- احراز هویت واقعی باید در Backend با اعتبارسنجی `initData` انجام شود
-- هیچ Token در این پروژه نیست
+فایل `js/config.js`:
 
-## اتصال بعدی به ربات
+- `links.bot` — باز کردن ربات
+- `links.developerProfile` / `developerPv`
+- `links.studio` / `studioJoin`
+- `links.officialChannel`
+- `links.github`
 
-1. در پنل بله، Web App URL را روی آدرس Pages بگذار
-2. Backend (مثلاً Railway MeowBot) endpointهایی مثل `/api/me` و `/shop/buy` اضافه کند
-3. در `js/app.js` مقدار `API_BASE` را تنظیم کن
+## Pages
 
-## توسعه محلی
+Settings → Pages → Deploy from branch → **main** → **/ (root)**
 
-فقط فایل‌ها را با یک static server باز کن، یا مستقیم HTML را در مرورگر ببین.
+## نکات
+
+- Scroll Reveal با IntersectionObserver
+- `prefers-reduced-motion` رعایت می‌شود
+- هیچ فراخوانی Bale.WebApp برای هویت کاربر نیست
